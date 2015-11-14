@@ -10,7 +10,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
-public class Sensor extends Agent 
+public class AgenteSensor extends Agent 
 {
 	private static final long serialVersionUID = 1L;
 	private boolean sensorState = false;
@@ -18,31 +18,43 @@ public class Sensor extends Agent
 	
 	@Override
 	protected void takeDown() {
+		// Código genérico para todos os agentes (tirar do registo determinado agente)
 		super.takeDown();
-		
-		 try { DFService.deregister(this); }
-         catch (Exception e) {e.printStackTrace();}
+		try { 
+			 DFService.deregister(this); 
+			 System.out.println("Agente["+this.getLocalName()+"] removido do registo de servicos");
+		 }
+         catch (Exception e) {
+        	 e.printStackTrace();
+        	 System.out.println("Agente["+this.getLocalName()+"] falha na remocao");
+         }
 		 
-		 System.out.println("A remover registo de serviços...");
+		 
 	}
 	
 	@Override
 	protected void setup() {
+		// Codigo de inicializacao do agente
 		super.setup();
 		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName(getLocalName());
-		sd.setType("sensor");
+		sd.setType("gui");
 		dfd.addServices(sd);
 		
-		try{ DFService.register(this, dfd );}
-        catch (FIPAException fe) { fe.printStackTrace(); }
-		
-		System.out.println("Agente "+this.getLocalName()+" a iniciar...");
+		try{ 
+			DFService.register(this, dfd );
+			System.out.println("Agente["+this.getLocalName()+"] a iniciar");
+		}
+        catch (FIPAException fe) { 
+        	fe.printStackTrace(); 
+        	System.out.println("Agente["+this.getLocalName()+"] inicializacao falhou");
+        }
 		
 		this.addBehaviour(new ReceiveBehaviour());
+		
 	}
 	
 	public boolean isSensorState() {
@@ -77,7 +89,7 @@ public class Sensor extends Agent
             	{
             		if (msg.getContent().equals("shutdown"))
             		{
-            			System.out.println("Sensor "+myAgent.getLocalName()+" a terminar...");
+            			System.out.println("Agente["+myAgent.getLocalName()+"] a terminar");
             			setFinished(true);
             		}
             		
@@ -90,7 +102,7 @@ public class Sensor extends Agent
             			}
             			else
             			{
-            				System.out.println("Sensor "+myAgent.getLocalName()+" está agora online.");
+                			System.out.println("Agente["+myAgent.getLocalName()+"] esta agora online");
             				reply.setPerformative(ACLMessage.CONFIRM);
             				myAgent.send(reply);
             				setSensorState(true);
@@ -101,7 +113,7 @@ public class Sensor extends Agent
             		{
             			if (isSensorState())
             			{
-            				System.out.println("Sensor "+myAgent.getLocalName()+" está agora offline.");
+                			System.out.println("Agente["+myAgent.getLocalName()+"] esta agora offline");
             				reply.setPerformative(ACLMessage.CONFIRM);
             				myAgent.send(reply);
             				setSensorState(false);
