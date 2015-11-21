@@ -22,7 +22,7 @@ public class AgenteSensor extends Agent
 		super.takeDown();
 		try { 
 			 DFService.deregister(this); 
-			 System.out.println("Agente["+this.getLocalName()+"] removido do registo de servicos");
+			 System.out.println("Agente["+this.getLocalName()+"] a terminar");
 		 }
          catch (Exception e) {
         	 e.printStackTrace();
@@ -41,7 +41,7 @@ public class AgenteSensor extends Agent
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName(getLocalName());
-		sd.setType("gui");
+		sd.setType("sensor");
 		dfd.addServices(sd);
 		
 		try{ 

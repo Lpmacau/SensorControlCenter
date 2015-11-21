@@ -1,7 +1,10 @@
 package controlCenter;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Random;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -11,6 +14,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
+import jade.wrapper.StaleProxyException;
 import ui.GUI;
 
 public class AgenteGUI extends GuiAgent{
@@ -28,7 +33,7 @@ public class AgenteGUI extends GuiAgent{
 		super.takeDown();
 		try { 
 			 DFService.deregister(this); 
-			 System.out.println("Agente["+this.getLocalName()+"] removido do registo de servicos");
+			 System.out.println("Agente["+this.getLocalName()+"] a terminar");
 		 }
          catch (Exception e) {
         	 e.printStackTrace();
@@ -63,15 +68,57 @@ public class AgenteGUI extends GuiAgent{
         }
 		
 		
+		// Adicionar comportamentos
+		this.addBehaviour(new ReceiveBehaviour());
+		
 	}
 
+	// Rececao de mensagens do agente controlador
+	private class ReceiveBehaviour extends CyclicBehaviour
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() 
+		{
+			ACLMessage msg = receive();
+            if (msg != null) 
+            {      
+            	String text = msg.getContent();
+       
+            	if (msg.getPerformative() == ACLMessage.INFORM)
+            	{
+            		if(text.equals("resposta")){
+                    	String resposta = msg.getUserDefinedParameter("resposta");
+
+                   	 System.out.println("Agente["+myAgent.getLocalName()+"] "+resposta);
+            		}
+            	}
+            }
+            block();
+		}
+	}
+	
+	// Processamento de eventos da GUI
 	protected void onGuiEvent(GuiEvent ev){
 		// Process the event according to it's type
 		int command = ev.getType();
 		if (command == BUTAOOK) {
-			String acc = (String) ev.getParameter(0);
-			int amount = ((int)ev.getParameter(1));
-			System.out.println("Agente["+this.getLocalName()+"] "+acc + " " + amount);
+			//System.out.println("Agente["+this.getLocalName()+"] "+acc + " " + amount);
+			
+			// Enviar para o controlador um pedido de inicialização dos sensores
+			AID receiver = new AID();
+			receiver.setLocalName("agControlador");
+			
+			ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+			long time = System.currentTimeMillis();
+			
+			request.setConversationId(""+time);
+			request.addReceiver(receiver);
+			request.addUserDefinedParameter("criar", "10");
+			request.setContent("criar agentes");
+			send(request);
+
 		}
 		else System.out.println("Agente["+this.getLocalName()+"] COMANDO ERRADO");
 		

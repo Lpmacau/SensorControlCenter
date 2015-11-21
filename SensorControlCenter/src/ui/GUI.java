@@ -61,8 +61,7 @@ public class GUI {
 
 	protected void butaoOK() {
 		GuiEvent ge = new GuiEvent(this,BUTAOOK);
-		ge.addParameter("Periodico");
-		ge.addParameter(48);
+		ge.addParameter(10);
 		agGUI.postGuiEvent(ge);
 		
 	}
