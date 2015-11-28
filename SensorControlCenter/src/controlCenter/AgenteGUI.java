@@ -86,12 +86,11 @@ public class AgenteGUI extends GuiAgent{
             {      
             	String text = msg.getContent();
        
-            	if (msg.getPerformative() == ACLMessage.INFORM)
+            	if (msg.getPerformative() == ACLMessage.CONFIRM)
             	{
             		if(text.equals("resposta")){
                     	String resposta = msg.getUserDefinedParameter("resposta");
-
-                   	 System.out.println("Agente["+myAgent.getLocalName()+"] "+resposta);
+                   	 	System.out.println("Agente["+myAgent.getLocalName()+"] "+resposta);
             		}
             	}
             }

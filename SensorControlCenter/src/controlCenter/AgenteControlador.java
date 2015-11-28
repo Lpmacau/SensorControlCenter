@@ -8,6 +8,7 @@ import java.util.Random;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -69,6 +70,24 @@ public class AgenteControlador extends Agent{
 		this.addBehaviour(new ReceiveBehaviour());
 	}
 
+	// Comportamento de pedido de sensores
+	private class RequestSensorBehaviour extends TickerBehaviour
+	{
+		private static final long serialVersionUID = 1L;
+		
+		public RequestSensorBehaviour(Agent a, long period) {
+			super(a, period);
+		}
+
+
+		@Override
+		protected void onTick() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 	// Comportamento de rececao de mensagens
 	private class ReceiveBehaviour extends CyclicBehaviour
 	{
@@ -91,11 +110,11 @@ public class AgenteControlador extends Agent{
             			try {
             				// Criar agentes e preparacao de resposta
 							createSensorAgents(nAgentes);
-							reply.setPerformative(ACLMessage.INFORM);
+							reply.setPerformative(ACLMessage.CONFIRM);
 							reply.addUserDefinedParameter("resposta","Criação de "+nAgentes+" agentes de sensor bem sucedida");
 							reply.setContent("resposta");
 						} catch (StaleProxyException e) {
-							reply.setPerformative(ACLMessage.INFORM);
+							reply.setPerformative(ACLMessage.FAILURE);
 							reply.addUserDefinedParameter("resposta",e.getMessage());
 							reply.setContent("resposta");
 						}
