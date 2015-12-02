@@ -137,7 +137,7 @@ public class AgenteSensor extends Agent
             				int randomNum = Math.abs(new Random().nextInt() % 100);
 
             	        	 System.out.println("Agente["+getLocalName()+"] recebi pedido de temperatura");
-            				if (randomNum < 10)
+            				if (randomNum < 5)
             				{
             					reply.setContent("XXXXX");
             					reply.setPerformative(ACLMessage.INFORM);
