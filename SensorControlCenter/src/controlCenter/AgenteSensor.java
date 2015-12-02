@@ -134,22 +134,28 @@ public class AgenteSensor extends Agent
             		{
             			if (isSensorState())
             			{
-            				int randomNum = Math.abs(new Random().nextInt() % 100);
+            				int randomNum = new Random().nextInt(70) - 20;
 
             	        	 System.out.println("Agente["+getLocalName()+"] recebi pedido de temperatura");
-            				if (randomNum < 5)
+            				if (randomNum < -5)
             				{
             					reply.setContent("XXXXX");
             					reply.setPerformative(ACLMessage.INFORM);
             					myAgent.send(reply);
             				}
-            				else if (randomNum >= 10 && randomNum < 20)
+            				else if (randomNum >= -20 && randomNum <= -6)
             				{
             					reply.setContent(-randomNum+"");
             					reply.setPerformative(ACLMessage.INFORM);
             					myAgent.send(reply);
             				}
-            				else if (randomNum >= 20 && randomNum < 90)
+            				else if (randomNum >= -5 && randomNum <= 40)
+            				{
+            					reply.setContent(-randomNum+"");
+            					reply.setPerformative(ACLMessage.INFORM);
+            					myAgent.send(reply);
+            				}
+            				else if (randomNum > 40 && randomNum < 50)
             				{
             					reply.setContent(randomNum+"");
             					reply.setPerformative(ACLMessage.INFORM);
