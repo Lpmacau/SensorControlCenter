@@ -15,14 +15,16 @@ import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 import ui.GUI;
 
 public class AgenteGUI extends GuiAgent{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int BUTAOOK = 1;
+	private static final int BUTAOSAIR = -1;
 	
 	// GUI
 	transient protected GUI ui;
@@ -100,9 +102,11 @@ public class AgenteGUI extends GuiAgent{
 	
 	// Processamento de eventos da GUI
 	protected void onGuiEvent(GuiEvent ev){
-		// Process the event according to it's type
+		// Obter tipo de Comando
 		int command = ev.getType();
-		if (command == BUTAOOK) {
+		
+		// Butao OK
+		if(command == BUTAOOK) {
 			//System.out.println("Agente["+this.getLocalName()+"] "+acc + " " + amount);
 			
 			// Enviar para o controlador um pedido de inicialização dos sensores
@@ -119,6 +123,22 @@ public class AgenteGUI extends GuiAgent{
 			send(request);
 
 		}
+		
+		// Terminar todos os agentes e suicidar-se
+		else if(command == BUTAOSAIR){
+			AID receiver = new AID();
+			receiver.setLocalName("agControlador");
+			
+			ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+			long time = System.currentTimeMillis();
+			
+			request.setConversationId(""+time);
+			request.addReceiver(receiver);
+			request.setContent("shutdown");
+			send(request);
+			doDelete();
+		}
+		
 		else System.out.println("Agente["+this.getLocalName()+"] COMANDO ERRADO");
 		
 	}

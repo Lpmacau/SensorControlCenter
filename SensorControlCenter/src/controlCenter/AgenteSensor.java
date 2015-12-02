@@ -47,6 +47,7 @@ public class AgenteSensor extends Agent
 		try{ 
 			DFService.register(this, dfd );
 			System.out.println("Agente["+this.getLocalName()+"] a iniciar");
+			this.setSensorState(true);
 		}
         catch (FIPAException fe) { 
         	fe.printStackTrace(); 
@@ -81,9 +82,12 @@ public class AgenteSensor extends Agent
 		public void action() 
 		{
 			ACLMessage msg = receive();
+
             if (msg != null) 
             {            	
             	ACLMessage reply = msg.createReply();
+
+           	 	System.out.println("Agente["+getLocalName()+"] Recebi mensagem "+msg.getContent());
             	
             	if (msg.getPerformative() == ACLMessage.REQUEST)
             	{
@@ -131,6 +135,8 @@ public class AgenteSensor extends Agent
             			if (isSensorState())
             			{
             				int randomNum = Math.abs(new Random().nextInt() % 100);
+
+            	        	 System.out.println("Agente["+getLocalName()+"] recebi pedido de temperatura");
             				if (randomNum < 10)
             				{
             					reply.setContent("XXXXX");

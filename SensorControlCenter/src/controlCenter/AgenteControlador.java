@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -68,6 +69,7 @@ public class AgenteControlador extends Agent{
 		// Procurar todos os agentes na rede e adicionar comportamentos
 		this.getAllAgents();
 		this.addBehaviour(new ReceiveBehaviour());
+		this.addBehaviour(new RequestSensorBehaviour(this,1000));
 	}
 
 	// Comportamento de pedido de sensores
@@ -82,8 +84,21 @@ public class AgenteControlador extends Agent{
 
 		@Override
 		protected void onTick() {
-			// TODO Auto-generated method stub
-			
+			if(agentes.get("sensor")!=null){
+	        	 System.out.println("Agente["+getLocalName()+"] vou pedir temperatura");
+				AID receiver = new AID();
+				receiver.setLocalName(agentes.get("sensor").get(0));
+				
+				ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+				long time = System.currentTimeMillis();
+				
+				request.setConversationId(""+time);
+				request.addReceiver(receiver);
+				request.setContent("value");
+				send(request);
+			}
+			else System.out.println("OLA");
+			block();
 		}
 		
 	}
@@ -96,15 +111,18 @@ public class AgenteControlador extends Agent{
 		@Override
 		public void action() 
 		{
+			// Receber Mensagem
 			ACLMessage msg = receive();
             if (msg != null) 
             {      
+            	// Criar resposta e obter conteudo da msg
             	ACLMessage reply = msg.createReply();
             	String text = msg.getContent();
             	
             	if (msg.getPerformative() == ACLMessage.REQUEST)
             	{
             		
+            		// Pedido de criação de agentes
             		if(text.equals("criar agentes")){
                     	int nAgentes = Integer.parseInt(msg.getUserDefinedParameter("criar"));
             			try {
@@ -120,6 +138,19 @@ public class AgenteControlador extends Agent{
 						}
             			myAgent.send(reply);
             		}
+
+        			// Desligar sensores
+            		if(text.equals("shutdown")){
+						shutdownSensors();
+						reply.setPerformative(ACLMessage.CONFIRM);
+						reply.setContent("resposta");
+            			myAgent.send(reply);
+            			myAgent.doDelete();
+            		}
+            	}
+            	
+            	else if(msg.getPerformative() == ACLMessage.INFORM){
+            		System.out.println(text);
             	}
             }
             block();
@@ -194,6 +225,25 @@ public class AgenteControlador extends Agent{
 		this.agentes = agentes;
 	}
 
+	public void shutdownSensors() {
+		// Atualizar agentes
+		this.getAllAgents();
+		
+		for(String s : this.agentes.get("sensor")){
+			AID receiver = new AID();
+			receiver.setLocalName(s);
+			
+			ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+			long time = System.currentTimeMillis();
+			String pedido = "shutdown";
+			
+			request.setConversationId(""+time);
+			request.addReceiver(receiver);
+			request.setContent(pedido);
+			send(request);
+		}
+	}
+
 	// Criacao de n agentes do tipo sensor
 	protected void createSensorAgents(int n) throws StaleProxyException{
 		ContainerController cc = getContainerController();
@@ -201,7 +251,7 @@ public class AgenteControlador extends Agent{
 			AgentController ac = cc.createNewAgent("agSensor"+i,AgenteSensor.class.getName(),null);
 			ac.start();
 		}
-		
+		this.getAllAgents();
 	}
 	
 	
