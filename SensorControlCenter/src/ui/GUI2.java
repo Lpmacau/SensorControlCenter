@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowStateListener;
+import java.util.ArrayList;
 import java.awt.event.WindowEvent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -33,6 +34,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.BoxLayout;
 import net.miginfocom.swing.MigLayout;
@@ -77,6 +79,7 @@ public class GUI2 {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		ArrayList<String> divisoes = new ArrayList<String>();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -102,6 +105,16 @@ public class GUI2 {
 		panelEntrada.add(textField_1);
 		
 		JButton button = new JButton("OK");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int divi = Integer.parseInt(textField_1.getText());
+				for(int i=1;i<=divi;i++)
+				{
+					divisoes.add(JOptionPane.showInputDialog(null,"Insira o nome da divisão"));
+				}
+				
+			}
+		});
 		button.setBounds(135, 201, 75, 37);
 		panelEntrada.add(button);
 		
