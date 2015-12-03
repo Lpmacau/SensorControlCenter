@@ -49,7 +49,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import javax.swing.BoxLayout;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.Color;
@@ -58,8 +57,6 @@ import javax.swing.JComboBox;
 
 public class GUI2 {
 
-	private static final int BUTAOOK = 1;
-	private static final int BUTAOSAIR = -1;
 	private static JFrame frame;
 	private AgenteGUI agGUI;
 	private JTextField textField_1;
