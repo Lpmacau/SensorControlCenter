@@ -134,7 +134,7 @@ public class GUI2 {
 				int divi = Integer.parseInt(textField_1.getText());
 				for(int i=1;i<=divi;i++)
 				{
-					divisoes.add(JOptionPane.showInputDialog(null,"Insira o nome da divisão"));
+					divisoes.add(JOptionPane.showInputDialog(null,"Insira o nome da divisï¿½o"));
 				}
 				
 			}
@@ -245,7 +245,7 @@ public class GUI2 {
 		panel.add(comboBox_1);
 		
 		JSplitPane splitPaneHistorico = new JSplitPane();
-		tabbedPane.addTab("Histórico", null, splitPaneHistorico, null);
+		tabbedPane.addTab("Histï¿½rico", null, splitPaneHistorico, null);
 		
 		JPanel panel_1 = new JPanel();
 		splitPaneHistorico.setLeftComponent(panel_1);

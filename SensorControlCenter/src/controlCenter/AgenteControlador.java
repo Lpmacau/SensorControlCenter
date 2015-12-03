@@ -167,16 +167,22 @@ public class AgenteControlador extends Agent{
 						
 						// Caso o sensor tenha demorado mais de 3000 ms a responder
 						if(answer == null || answer.getContent().equals("XXXXX")) {
-							System.out.println("Agente["+getLocalName()+"] "+agente+" não enviou temperatura");
+							
+							// Determinar o erro
+							if(answer == null) System.out.println("Agente["+getLocalName()+"] "+agente+" não enviou temperatura");
+							else System.out.println("Agente["+getLocalName()+"] "+agente+" enviou temperatura inválida");
+							
 							// Caso já tenha uma lista de erros
 							if(sensorErrors.containsKey(agente)){
-								sensorErrors.get(agente).add(new SensorError("timeout"));
+								if(answer==null) sensorErrors.get(agente).add(new SensorError("timeout"));
+								else sensorErrors.get(agente).add(new SensorError("XXXXX"));
 							}
 							
 							// Criar lista de erros
 							else{
 								ArrayList<SensorError> lista = new ArrayList<SensorError>();
-								lista.add(new SensorError("timeout"));
+								if(answer==null) lista.add(new SensorError("timeout"));
+								else lista.add(new SensorError("XXXXX"));
 								sensorErrors.put(agente,lista);
 							}
 
@@ -210,11 +216,11 @@ public class AgenteControlador extends Agent{
 				
 				System.out.println("----------------------------------------");
 				System.out.println("ERROS ATUAIS:");
-				for(List<SensorError> l : sensorErrors.values()){
-					for(SensorError s : l){
+				for(Map.Entry<String,List<SensorError>> entrada : sensorErrors.entrySet()){
+					String nome = entrada.getKey();
+					for(SensorError s : entrada.getValue()){
 						System.out.println(s.getTempo().hour+":"+s.getTempo().minutes+":"+s.getTempo().minutes+" -> "+s.getTipo());
 					}
-					
 				}
 
 				System.out.println("----------------------------------------");
