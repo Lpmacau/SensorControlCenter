@@ -80,11 +80,10 @@ public class GUI2 {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JPanel panelEntrada = new JPanel();
-		panelEntrada.setBounds(-10008, -10031, 434, 261);
-		frame.getContentPane().add(panelEntrada);
+		frame.getContentPane().add(panelEntrada, "name_81389608892175");
 		panelEntrada.setLayout(null);
 		
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -115,8 +114,7 @@ public class GUI2 {
 		panelEntrada.add(button_1);
 		
 		JPanel panelPrincipal = new JPanel();
-		panelPrincipal.setBounds(-10008, -10031, 434, 261);
-		frame.getContentPane().add(panelPrincipal);
+		frame.getContentPane().add(panelPrincipal, "name_81389619862659");
 		panelPrincipal.setLayout(null);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -130,8 +128,7 @@ public class GUI2 {
 		mnSensorcenas.add(mntmSair);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 434, 261);
-		frame.getContentPane().add(tabbedPane);
+		frame.getContentPane().add(tabbedPane, "name_81389629922512");
 		
 		JSplitPane splitPaneHome = new JSplitPane();
 		tabbedPane.addTab("Home", null, splitPaneHome, null);
