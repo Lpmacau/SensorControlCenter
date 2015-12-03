@@ -86,10 +86,6 @@ public class GUI2 {
 		frame.getContentPane().add(panelEntrada, "name_81389608892175");
 		panelEntrada.setLayout(null);
 		
-		JPopupMenu popupMenu = new JPopupMenu();
-		popupMenu.setBounds(-5032, -5000, 103, 46);
-		panelEntrada.add(popupMenu);
-		
 		JTextArea textArea = new JTextArea();
 		textArea.setText("SensorCenas");
 		textArea.setBounds(173, 44, 92, 22);
@@ -128,7 +124,8 @@ public class GUI2 {
 		mnSensorcenas.add(mntmSair);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		frame.getContentPane().add(tabbedPane, "name_81389629922512");
+		tabbedPane.setBounds(0, 21, 434, 240);
+		panelPrincipal.add(tabbedPane);
 		
 		JSplitPane splitPaneHome = new JSplitPane();
 		tabbedPane.addTab("Home", null, splitPaneHome, null);
@@ -158,10 +155,8 @@ public class GUI2 {
 		JLabel lblAvisos = new JLabel("Avisos:");
 		panelEsquerda.add(lblAvisos, "cell 0 1");
 		
-		JTextPane Avisos = new JTextPane();
-		Avisos.setBackground(Color.WHITE);
-		Avisos.setText("Inserir aquios avisos");
-		panelEsquerda.add(Avisos, "cell 0 2,grow");
+		JLabel lblAvisos1 = new JLabel("Inserir aqui os avisos");
+		panelEsquerda.add(lblAvisos1, "cell 0 2,growx");
 		
 		JPanel panel = new JPanel();
 		splitPaneHome.setRightComponent(panel);
