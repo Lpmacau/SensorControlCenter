@@ -87,7 +87,7 @@ public class AgenteSensor extends Agent
             {            	
             	ACLMessage reply = msg.createReply();
 
-           	 	System.out.println("Agente["+getLocalName()+"] Recebi mensagem "+msg.getContent());
+           	 	//System.out.println("Agente["+getLocalName()+"] Recebi mensagem "+msg.getContent());
             	
             	if (msg.getPerformative() == ACLMessage.REQUEST)
             	{
@@ -134,10 +134,21 @@ public class AgenteSensor extends Agent
             		{
             			if (isSensorState())
             			{
-            				int randomNum = new Random().nextInt(70) - 20;
+            				int randomNum = new Random().nextInt(51)-26 ;
 
-            	        	 System.out.println("Agente["+getLocalName()+"] recebi pedido de temperatura");
-            				if (randomNum < -5)
+
+            	        	//System.out.println("Agente["+getLocalName()+"] recebi pedido de temperatura");
+            	        	 
+            	        	if(randomNum == -26){
+            	        		try {
+									Thread.sleep(3000);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+            	        	}
+            	        	
+            	        	else if (randomNum < -20 && randomNum >= -25)
             				{
             					reply.setContent("XXXXX");
             					reply.setPerformative(ACLMessage.INFORM);

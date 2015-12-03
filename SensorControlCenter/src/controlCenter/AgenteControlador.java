@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import FIPA.DateTime;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -26,6 +27,46 @@ public class AgenteControlador extends Agent{
 
 	private static final long serialVersionUID = 1L;
 	private Map<String,List<String>> agentes;
+	private Map<String,Integer> lastValues;
+	private Map<String,String> lastErrors;
+	private Map<String,List<SensorValue>> history;
+	private Map<String,List<SensorError>> sensorErrors;
+	
+	private class SensorValue{
+		private DateTime tempo;
+		private int valor;
+		
+		public SensorValue(int valor){
+			this.tempo = new DateTime();
+			this.valor = valor;
+		}
+		
+		public DateTime getTempo(){
+			return this.tempo;
+		}
+		
+		public int getValor(){
+			return this.valor;
+		}
+	}
+	
+	private class SensorError{
+		private DateTime tempo;
+		private String tipo;
+		
+		public SensorError (String tipo){
+			this.tempo = new DateTime();
+			this.tipo = tipo;
+		}
+		
+		public String getTipo(){
+			return this.tipo;
+		}
+		
+		public DateTime getTempo(){
+			return this.tempo;
+		}
+	}
 	
 	
 	@Override
@@ -65,11 +106,17 @@ public class AgenteControlador extends Agent{
         	System.out.println("Agente["+this.getLocalName()+"] inicializacao falhou");
         }
 		
+		// Inicializar estruturas
+		this.agentes = new HashMap<String,List<String>>();
+		this.history = new HashMap<String,List<SensorValue>>();
+		this.lastErrors = new HashMap<String,String>();
+		this.lastValues = new HashMap<String,Integer>();
+		this.sensorErrors = new HashMap<String,List<SensorError>>();
 		
 		// Procurar todos os agentes na rede e adicionar comportamentos
 		this.getAllAgents();
 		this.addBehaviour(new ReceiveBehaviour());
-		this.addBehaviour(new RequestSensorBehaviour(this,1000));
+		this.addBehaviour(new RequestSensorBehaviour(this,3000));
 	}
 
 	// Comportamento de pedido de sensores
@@ -81,26 +128,102 @@ public class AgenteControlador extends Agent{
 			super(a, period);
 		}
 
-
 		@Override
 		protected void onTick() {
+			// Verificar se existe sensores detetados
 			if(agentes.get("sensor")!=null){
-	        	 System.out.println("Agente["+getLocalName()+"] vou pedir temperatura");
-				AID receiver = new AID();
-				receiver.setLocalName(agentes.get("sensor").get(0));
+				// Limpar valores anteriores
+				lastErrors.clear();
+				lastValues.clear();
 				
-				ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
-				long time = System.currentTimeMillis();
+				// Obter listas de pedidos e recetores
+				List<ACLMessage> requests = new ArrayList<ACLMessage>();
+				List<AID> receivers = new ArrayList<AID>();
 				
-				request.setConversationId(""+time);
-				request.addReceiver(receiver);
-				request.setContent("value");
-				send(request);
+				// Preparar pedido e preencher listas
+				for(String agent : agentes.get("sensor")){
+					AID receiver = new AID();
+					receiver.setLocalName(agent);
+					
+					ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+					long time = System.currentTimeMillis();
+					
+					request.setConversationId(""+time);
+					request.addReceiver(receiver);
+					request.setContent("value");
+					
+					requests.add(request);
+					receivers.add(receiver);
+				}
+				
+				// Realizar o pedido aos sensores
+				for(int i = 0; i < requests.size(); i++){
+					ACLMessage request = requests.get(i);
+					AID receiver = receivers.get(i);
+					String agente = receiver.getLocalName();
+					try {
+						// Fazer pedido e esperar resposta
+						ACLMessage answer = DFService.doFipaRequestClient(myAgent, request, 3000);
+						
+						// Caso o sensor tenha demorado mais de 3000 ms a responder
+						if(answer == null || answer.getContent().equals("XXXXX")) {
+							System.out.println("Agente["+getLocalName()+"] "+agente+" não enviou temperatura");
+							// Caso já tenha uma lista de erros
+							if(sensorErrors.containsKey(agente)){
+								sensorErrors.get(agente).add(new SensorError("timeout"));
+							}
+							
+							// Criar lista de erros
+							else{
+								ArrayList<SensorError> lista = new ArrayList<SensorError>();
+								lista.add(new SensorError("timeout"));
+								sensorErrors.put(agente,lista);
+							}
+
+							lastErrors.put(agente, "timeout");
+						}
+						
+						// Resposta do sensor
+						else {
+							System.out.println("Agente["+getLocalName()+"] "+answer.getContent());
+
+							int valor = Integer.parseInt(answer.getContent());
+							// Inserir no historico e nos ultimos valores
+							if(history.containsKey(agente)){
+								history.get(agente).add(new SensorValue(valor));
+							}
+							
+							else{
+								ArrayList<SensorValue> lista = new ArrayList<SensorValue>();
+								lista.add(new SensorValue(valor));
+								history.put(agente,lista);
+							}
+
+							lastValues.put(agente,valor);
+						}
+					} catch (FIPAException e) {
+						// TODO Auto-generated catch block
+						System.out.println("ESCAXOU");
+						e.printStackTrace();
+					}
+				}
+				
+				System.out.println("----------------------------------------");
+				System.out.println("ERROS ATUAIS:");
+				for(List<SensorError> l : sensorErrors.values()){
+					for(SensorError s : l){
+						System.out.println(s.getTempo().hour+":"+s.getTempo().minutes+":"+s.getTempo().minutes+" -> "+s.getTipo());
+					}
+					
+				}
+
+				System.out.println("----------------------------------------");
+				
 			}
-			else System.out.println("OLA");
+			else 
+				System.out.println("Agente["+getLocalName()+"] não há sensores disponíveis");
 			block();
 		}
-		
 	}
 	
 	// Comportamento de rececao de mensagens
@@ -225,7 +348,8 @@ public class AgenteControlador extends Agent{
 		this.agentes = agentes;
 	}
 
-	public void shutdownSensors() {
+	// Terminar os sensores
+	private void shutdownSensors() {
 		// Atualizar agentes
 		this.getAllAgents();
 		
@@ -245,7 +369,7 @@ public class AgenteControlador extends Agent{
 	}
 
 	// Criacao de n agentes do tipo sensor
-	protected void createSensorAgents(int n) throws StaleProxyException{
+	private void createSensorAgents(int n) throws StaleProxyException{
 		ContainerController cc = getContainerController();
 		for(int i = 0; i<n ; i++){
 			AgentController ac = cc.createNewAgent("agSensor"+i,AgenteSensor.class.getName(),null);
@@ -253,7 +377,4 @@ public class AgenteControlador extends Agent{
 		}
 		this.getAllAgents();
 	}
-	
-	
-
 }

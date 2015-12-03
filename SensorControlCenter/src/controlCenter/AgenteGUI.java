@@ -7,6 +7,7 @@ import java.util.Random;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -74,7 +75,8 @@ public class AgenteGUI extends GuiAgent{
 		this.addBehaviour(new ReceiveBehaviour());
 		
 	}
-
+	
+	
 	// Rececao de mensagens do agente controlador
 	private class ReceiveBehaviour extends CyclicBehaviour
 	{
@@ -118,7 +120,7 @@ public class AgenteGUI extends GuiAgent{
 			
 			request.setConversationId(""+time);
 			request.addReceiver(receiver);
-			request.addUserDefinedParameter("criar", "10");
+			request.addUserDefinedParameter("criar", "5");
 			request.setContent("criar agentes");
 			send(request);
 
