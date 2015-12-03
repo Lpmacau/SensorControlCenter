@@ -36,6 +36,14 @@ import java.awt.CardLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -45,6 +53,7 @@ import javax.swing.BoxLayout;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.Color;
+import java.awt.Panel;
 
 public class GUI2 {
 
@@ -197,6 +206,35 @@ public class GUI2 {
 		splitPaneHome.setRightComponent(panel);
 		panel.setLayout(null);
 		
+		Panel panel_3 = new Panel();
+		panel_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int s1 = 1;
+				int s2 = 10;
+				int s3 = 20;
+				int s4 = 4;
+				
+				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+				dataset.setValue(s1, "", "Sala");
+				dataset.setValue(s2, "", "Cozinha");
+				dataset.setValue(s3, "", "divisao3");
+				dataset.setValue(s4, "", "divisao4");
+				
+				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+				CategoryPlot catPlot = chart.getCategoryPlot();
+				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+				
+				ChartPanel chartPanel = new ChartPanel(chart);
+				panel_3.removeAll();
+				panel_3.add(chartPanel, BorderLayout.CENTER);
+				panel_3.validate();
+			}
+		});
+		panel_3.setBounds(10, 10, 190, 150);
+		panel.add(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
+		
 		JSplitPane splitPaneHistorico = new JSplitPane();
 		tabbedPane.addTab("Histórico", null, splitPaneHistorico, null);
 		
@@ -224,6 +262,36 @@ public class GUI2 {
 		
 		JPanel panel_2 = new JPanel();
 		splitPaneHistorico.setRightComponent(panel_2);
+		panel_2.setLayout(null);
+		
+		Panel panel_4 = new Panel();
+		panel_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int s1 = 1;
+				int s2 = 10;
+				int s3 = 20;
+				int s4 = 4;
+				
+				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+				dataset.setValue(s1, "", "Sala");
+				dataset.setValue(s2, "", "Cozinha");
+				dataset.setValue(s3, "", "divisao3");
+				dataset.setValue(s4, "", "divisao4");
+				
+				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+				CategoryPlot catPlot = chart.getCategoryPlot();
+				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+				
+				ChartPanel chartPanel = new ChartPanel(chart);
+				panel_4.removeAll();
+				panel_4.add(chartPanel, BorderLayout.CENTER);
+				panel_4.validate();
+			}
+		});
+		panel_4.setBounds(10, 10, 166, 151);
+		panel_2.add(panel_4);
+		panel_4.setLayout(new BorderLayout(0, 0));
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
