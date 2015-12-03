@@ -27,6 +27,11 @@ import javax.swing.JTextPane;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import java.awt.CardLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -45,7 +50,7 @@ public class GUI2 {
 
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
-	private JFrame frame;
+	private static JFrame frame;
 	private AgenteGUI agGUI;
 	private JTextField textField_1;
 	private JTable tableHome;
@@ -55,6 +60,25 @@ public class GUI2 {
 	 * Launch the application.
 	 */
 	public static void main(AgenteGUI ag) {
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+			}
+		} catch (UnsupportedLookAndFeelException e) {
+		       // handle exception
+	    }
+	    catch (ClassNotFoundException e) {
+	       // handle exception
+	    }
+	    catch (InstantiationException e) {
+	       // handle exception
+	    }
+	    catch (IllegalAccessException e) {
+	       // handle exception
+	    }
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -89,16 +113,6 @@ public class GUI2 {
 		frame.getContentPane().add(panelEntrada, "name_81389608892175");
 		panelEntrada.setLayout(null);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setText("SensorCenas");
-		textArea.setBounds(173, 44, 92, 22);
-		panelEntrada.add(textArea);
-		
-		JTextArea textArea_1 = new JTextArea();
-		textArea_1.setText("N\u00FAmero de Divis\u00F5es:");
-		textArea_1.setBounds(142, 124, 156, 22);
-		panelEntrada.add(textArea_1);
-		
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
 		textField_1.setBounds(177, 151, 86, 20);
@@ -121,6 +135,14 @@ public class GUI2 {
 		JButton button_1 = new JButton("Exit");
 		button_1.setBounds(235, 201, 75, 37);
 		panelEntrada.add(button_1);
+		
+		JLabel lblSensorcenas = new JLabel("SensorCenas");
+		lblSensorcenas.setBounds(185, 48, 63, 14);
+		panelEntrada.add(lblSensorcenas);
+		
+		JLabel lblNmeroDeDivises = new JLabel("N\u00FAmero de Divis\u00F5es:");
+		lblNmeroDeDivises.setBounds(168, 126, 107, 14);
+		panelEntrada.add(lblNmeroDeDivises);
 		
 		JPanel panelPrincipal = new JPanel();
 		frame.getContentPane().add(panelPrincipal, "name_81389619862659");
