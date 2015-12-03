@@ -54,6 +54,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Panel;
+import javax.swing.JComboBox;
 
 public class GUI2 {
 
@@ -235,6 +236,14 @@ public class GUI2 {
 		panel.add(panel_3);
 		panel_3.setLayout(new BorderLayout(0, 0));
 		
+		JLabel label = new JLabel("Escolha a divis\u00E3o:");
+		label.setBounds(10, 182, 91, 14);
+		panel.add(label);
+		
+		JComboBox comboBox_1 = new JComboBox();
+		comboBox_1.setBounds(95, 179, 105, 20);
+		panel.add(comboBox_1);
+		
 		JSplitPane splitPaneHistorico = new JSplitPane();
 		tabbedPane.addTab("Histórico", null, splitPaneHistorico, null);
 		
@@ -292,6 +301,14 @@ public class GUI2 {
 		panel_4.setBounds(10, 10, 166, 151);
 		panel_2.add(panel_4);
 		panel_4.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblEscolhaADiviso = new JLabel("Escolha a divis\u00E3o:");
+		lblEscolhaADiviso.setBounds(10, 185, 91, 14);
+		panel_2.add(lblEscolhaADiviso);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(95, 182, 81, 20);
+		panel_2.add(comboBox);
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
