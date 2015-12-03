@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowStateListener;
+import java.util.ArrayList;
 import java.awt.event.WindowEvent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -26,29 +27,68 @@ import javax.swing.JTextPane;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import java.awt.CardLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.BoxLayout;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JLabel;
+import java.awt.Color;
+import java.awt.Panel;
+import javax.swing.JComboBox;
 
 public class GUI2 {
 
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
-	private JFrame frame;
+	private static JFrame frame;
 	private AgenteGUI agGUI;
-	private JTextField textField;
 	private JTextField textField_1;
-	private JTable tableInformacoes;
+	private JTable tableHome;
 	private JTable tableHistorico;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(AgenteGUI ag) {
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+			}
+		} catch (UnsupportedLookAndFeelException e) {
+		       // handle exception
+	    }
+	    catch (ClassNotFoundException e) {
+	       // handle exception
+	    }
+	    catch (InstantiationException e) {
+	       // handle exception
+	    }
+	    catch (IllegalAccessException e) {
+	       // handle exception
+	    }
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -73,28 +113,15 @@ public class GUI2 {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		ArrayList<String> divisoes = new ArrayList<String>();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JPanel panelEntrada = new JPanel();
-		frame.getContentPane().add(panelEntrada, "name_74011905447920");
+		frame.getContentPane().add(panelEntrada, "name_81389608892175");
 		panelEntrada.setLayout(null);
-		
-		JPopupMenu popupMenu = new JPopupMenu();
-		popupMenu.setBounds(-5032, -5000, 103, 46);
-		panelEntrada.add(popupMenu);
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setText("SensorCenas");
-		textArea.setBounds(173, 44, 92, 22);
-		panelEntrada.add(textArea);
-		
-		JTextArea textArea_1 = new JTextArea();
-		textArea_1.setText("N\u00FAmero de Divis\u00F5es:");
-		textArea_1.setBounds(142, 124, 156, 22);
-		panelEntrada.add(textArea_1);
 		
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
@@ -102,6 +129,16 @@ public class GUI2 {
 		panelEntrada.add(textField_1);
 		
 		JButton button = new JButton("OK");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int divi = Integer.parseInt(textField_1.getText());
+				for(int i=1;i<=divi;i++)
+				{
+					divisoes.add(JOptionPane.showInputDialog(null,"Insira o nome da divisão"));
+				}
+				
+			}
+		});
 		button.setBounds(135, 201, 75, 37);
 		panelEntrada.add(button);
 		
@@ -109,8 +146,16 @@ public class GUI2 {
 		button_1.setBounds(235, 201, 75, 37);
 		panelEntrada.add(button_1);
 		
+		JLabel lblSensorcenas = new JLabel("SensorCenas");
+		lblSensorcenas.setBounds(185, 48, 63, 14);
+		panelEntrada.add(lblSensorcenas);
+		
+		JLabel lblNmeroDeDivises = new JLabel("N\u00FAmero de Divis\u00F5es:");
+		lblNmeroDeDivises.setBounds(168, 126, 107, 14);
+		panelEntrada.add(lblNmeroDeDivises);
+		
 		JPanel panelPrincipal = new JPanel();
-		frame.getContentPane().add(panelPrincipal, "name_74013502066179");
+		frame.getContentPane().add(panelPrincipal, "name_81389619862659");
 		panelPrincipal.setLayout(null);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -123,74 +168,147 @@ public class GUI2 {
 		JMenuItem mntmSair = new JMenuItem("Sair");
 		mnSensorcenas.add(mntmSair);
 		
-		JSplitPane splitPane_1 = new JSplitPane();
-		splitPane_1.setBounds(0, 21, 434, 240);
-		panelPrincipal.add(splitPane_1);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(0, 21, 434, 240);
+		panelPrincipal.add(tabbedPane);
+		
+		JSplitPane splitPaneHome = new JSplitPane();
+		tabbedPane.addTab("Home", null, splitPaneHome, null);
 		
 		JPanel panelEsquerda = new JPanel();
-		splitPane_1.setLeftComponent(panelEsquerda);
+		splitPaneHome.setLeftComponent(panelEsquerda);
 		
-		tableInformacoes = new JTable();
-		tableInformacoes.setModel(new DefaultTableModel(
+		tableHome = new JTable();
+		tableHome.setModel(new DefaultTableModel(
 			new Object[][] {
 				{"M\u00E9dia Casa", null},
 				{"Divis\u00E3o mais quente", null},
 				{"Divis\u00E3o mais fria", null},
 				{"Total Falhas", null},
-				{"Leituras errada", null},
-				{"Leitura inconsistente", null},
+				{"Leituras erradas", null},
+				{"Leituras inconsistentes", null},
+				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
-		tableInformacoes.getColumnModel().getColumn(0).setPreferredWidth(103);
-		panelEsquerda.add(tableInformacoes);
+		tableHome.getColumnModel().getColumn(0).setPreferredWidth(113);
+		panelEsquerda.setLayout(new MigLayout("", "[188px,grow][6px]", "[93.00px][][grow]"));
+		panelEsquerda.add(tableHome, "cell 0 0,aligny center");
+		
+		JLabel lblAvisos = new JLabel("Avisos:");
+		panelEsquerda.add(lblAvisos, "cell 0 1");
+		
+		JLabel lblAvisos1 = new JLabel("Inserir aqui os avisos");
+		panelEsquerda.add(lblAvisos1, "cell 0 2,growx");
 		
 		JPanel panel = new JPanel();
-		splitPane_1.setRightComponent(panel);
+		splitPaneHome.setRightComponent(panel);
 		panel.setLayout(null);
 		
-		JButton btnHistorico = new JButton("Hist\u00F3rico");
-		btnHistorico.setBounds(128, 211, 89, 23);
-		panel.add(btnHistorico);
+		Panel panel_3 = new Panel();
+		panel_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int s1 = 1;
+				int s2 = 10;
+				int s3 = 20;
+				int s4 = 4;
+				
+				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+				dataset.setValue(s1, "", "Sala");
+				dataset.setValue(s2, "", "Cozinha");
+				dataset.setValue(s3, "", "divisao3");
+				dataset.setValue(s4, "", "divisao4");
+				
+				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+				CategoryPlot catPlot = chart.getCategoryPlot();
+				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+				
+				ChartPanel chartPanel = new ChartPanel(chart);
+				panel_3.removeAll();
+				panel_3.add(chartPanel, BorderLayout.CENTER);
+				panel_3.validate();
+			}
+		});
+		panel_3.setBounds(10, 10, 190, 150);
+		panel.add(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
 		
-		JPanel panelPrincipalHistorico = new JPanel();
-		frame.getContentPane().add(panelPrincipalHistorico, "name_77564883011518");
-		panelPrincipalHistorico.setLayout(null);
+		JLabel label = new JLabel("Escolha a divis\u00E3o:");
+		label.setBounds(10, 182, 91, 14);
+		panel.add(label);
+		
+		JComboBox comboBox_1 = new JComboBox();
+		comboBox_1.setBounds(95, 179, 105, 20);
+		panel.add(comboBox_1);
+		
+		JSplitPane splitPaneHistorico = new JSplitPane();
+		tabbedPane.addTab("Histórico", null, splitPaneHistorico, null);
+		
+		JPanel panel_1 = new JPanel();
+		splitPaneHistorico.setLeftComponent(panel_1);
 		
 		tableHistorico = new JTable();
-		tableHistorico.setBounds(108, 76, 228, 112);
-		panelPrincipalHistorico.add(tableHistorico);
 		tableHistorico.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"M\u00E9dia da casa", null},
-				{"Temperatura mais alta", null},
-				{"Temperatutra mais baixa", null},
-				{"Total de falhas", null},
-				{"Total de leituras erradas", null},
-				{"Total de leituras inconsistentes", null},
-				{"Total de avisos", null},
+				{"M\u00E9dia da Casa", null},
+				{"Divis\u00E3o mais quente", null},
+				{"Divis\u00E3o mais fria", null},
+				{"Total de Falhas", ""},
+				{"Total leituras erradas", null},
+				{"Total leituras inconcistentes", null},
+				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
+		tableHistorico.getColumnModel().getColumn(0).setPreferredWidth(147);
+		panel_1.setLayout(new MigLayout("", "[222px]", "[222.00px]"));
+		panel_1.add(tableHistorico, "cell 0 0,alignx left,aligny top");
 		
-		JDesktopPane desktopPaneEntradaPopUp = new JDesktopPane();
-		frame.getContentPane().add(desktopPaneEntradaPopUp, "name_77764873901482");
-		desktopPaneEntradaPopUp.setLayout(null);
+		JPanel panel_2 = new JPanel();
+		splitPaneHistorico.setRightComponent(panel_2);
+		panel_2.setLayout(null);
 		
-		JTextPane textPane = new JTextPane();
-		textPane.setBounds(109, 115, 97, 20);
-		desktopPaneEntradaPopUp.add(textPane);
-		textPane.setText("Nome da x divis\u00E3o:");
+		Panel panel_4 = new Panel();
+		panel_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int s1 = 1;
+				int s2 = 10;
+				int s3 = 20;
+				int s4 = 4;
+				
+				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+				dataset.setValue(s1, "", "Sala");
+				dataset.setValue(s2, "", "Cozinha");
+				dataset.setValue(s3, "", "divisao3");
+				dataset.setValue(s4, "", "divisao4");
+				
+				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+				CategoryPlot catPlot = chart.getCategoryPlot();
+				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+				
+				ChartPanel chartPanel = new ChartPanel(chart);
+				panel_4.removeAll();
+				panel_4.add(chartPanel, BorderLayout.CENTER);
+				panel_4.validate();
+			}
+		});
+		panel_4.setBounds(10, 10, 166, 151);
+		panel_2.add(panel_4);
+		panel_4.setLayout(new BorderLayout(0, 0));
 		
-		textField = new JTextField();
-		textField.setBounds(218, 115, 97, 20);
-		desktopPaneEntradaPopUp.add(textField);
-		textField.setColumns(10);
-		tableHistorico.getColumnModel().getColumn(0).setPreferredWidth(153);
+		JLabel lblEscolhaADiviso = new JLabel("Escolha a divis\u00E3o:");
+		lblEscolhaADiviso.setBounds(10, 185, 91, 14);
+		panel_2.add(lblEscolhaADiviso);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(95, 182, 81, 20);
+		panel_2.add(comboBox);
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
