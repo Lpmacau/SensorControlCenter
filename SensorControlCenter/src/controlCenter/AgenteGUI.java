@@ -29,7 +29,7 @@ public class AgenteGUI extends GuiAgent{
 	private static final int BUTAOSAIR = -1;
 	
 	// GUI
-	transient protected GUI2 ui;
+	transient protected GUI ui;
 	
 	@Override
 	protected void takeDown() {
@@ -53,7 +53,7 @@ public class AgenteGUI extends GuiAgent{
 		super.setup();
 		
 		// Criacao do GUI
-		GUI2.main(this);
+		GUI.main(this);
 		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());

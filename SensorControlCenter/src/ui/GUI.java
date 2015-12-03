@@ -52,6 +52,7 @@ public class GUI {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setVisible(true);
 		
 		JButton btnOk = new JButton("OK");
 		btnOk.setBounds(130, 203, 75, 37);
