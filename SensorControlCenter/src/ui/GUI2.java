@@ -33,6 +33,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
+import javax.swing.BoxLayout;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JLabel;
+import java.awt.Color;
 
 public class GUI2 {
 
@@ -40,9 +45,8 @@ public class GUI2 {
 	private static final int BUTAOSAIR = -1;
 	private JFrame frame;
 	private AgenteGUI agGUI;
-	private JTextField textField;
 	private JTextField textField_1;
-	private JTable tableInformacoes;
+	private JTable tableHome;
 	private JTable tableHistorico;
 
 	/**
@@ -76,10 +80,11 @@ public class GUI2 {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.getContentPane().setLayout(new CardLayout(0, 0));
+		frame.getContentPane().setLayout(null);
 		
 		JPanel panelEntrada = new JPanel();
-		frame.getContentPane().add(panelEntrada, "name_74011905447920");
+		panelEntrada.setBounds(-10008, -10031, 434, 261);
+		frame.getContentPane().add(panelEntrada);
 		panelEntrada.setLayout(null);
 		
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -110,7 +115,8 @@ public class GUI2 {
 		panelEntrada.add(button_1);
 		
 		JPanel panelPrincipal = new JPanel();
-		frame.getContentPane().add(panelPrincipal, "name_74013502066179");
+		panelPrincipal.setBounds(-10008, -10031, 434, 261);
+		frame.getContentPane().add(panelPrincipal);
 		panelPrincipal.setLayout(null);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -123,74 +129,74 @@ public class GUI2 {
 		JMenuItem mntmSair = new JMenuItem("Sair");
 		mnSensorcenas.add(mntmSair);
 		
-		JSplitPane splitPane_1 = new JSplitPane();
-		splitPane_1.setBounds(0, 21, 434, 240);
-		panelPrincipal.add(splitPane_1);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(0, 0, 434, 261);
+		frame.getContentPane().add(tabbedPane);
+		
+		JSplitPane splitPaneHome = new JSplitPane();
+		tabbedPane.addTab("Home", null, splitPaneHome, null);
 		
 		JPanel panelEsquerda = new JPanel();
-		splitPane_1.setLeftComponent(panelEsquerda);
+		splitPaneHome.setLeftComponent(panelEsquerda);
 		
-		tableInformacoes = new JTable();
-		tableInformacoes.setModel(new DefaultTableModel(
+		tableHome = new JTable();
+		tableHome.setModel(new DefaultTableModel(
 			new Object[][] {
 				{"M\u00E9dia Casa", null},
 				{"Divis\u00E3o mais quente", null},
 				{"Divis\u00E3o mais fria", null},
 				{"Total Falhas", null},
-				{"Leituras errada", null},
-				{"Leitura inconsistente", null},
+				{"Leituras erradas", null},
+				{"Leituras inconsistentes", null},
+				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
-		tableInformacoes.getColumnModel().getColumn(0).setPreferredWidth(103);
-		panelEsquerda.add(tableInformacoes);
+		tableHome.getColumnModel().getColumn(0).setPreferredWidth(113);
+		panelEsquerda.setLayout(new MigLayout("", "[188px,grow][6px]", "[93.00px][][grow]"));
+		panelEsquerda.add(tableHome, "cell 0 0,aligny center");
+		
+		JLabel lblAvisos = new JLabel("Avisos:");
+		panelEsquerda.add(lblAvisos, "cell 0 1");
+		
+		JTextPane Avisos = new JTextPane();
+		Avisos.setBackground(Color.WHITE);
+		Avisos.setText("Inserir aquios avisos");
+		panelEsquerda.add(Avisos, "cell 0 2,grow");
 		
 		JPanel panel = new JPanel();
-		splitPane_1.setRightComponent(panel);
+		splitPaneHome.setRightComponent(panel);
 		panel.setLayout(null);
 		
-		JButton btnHistorico = new JButton("Hist\u00F3rico");
-		btnHistorico.setBounds(128, 211, 89, 23);
-		panel.add(btnHistorico);
+		JSplitPane splitPaneHistorico = new JSplitPane();
+		tabbedPane.addTab("Histórico", null, splitPaneHistorico, null);
 		
-		JPanel panelPrincipalHistorico = new JPanel();
-		frame.getContentPane().add(panelPrincipalHistorico, "name_77564883011518");
-		panelPrincipalHistorico.setLayout(null);
+		JPanel panel_1 = new JPanel();
+		splitPaneHistorico.setLeftComponent(panel_1);
 		
 		tableHistorico = new JTable();
-		tableHistorico.setBounds(108, 76, 228, 112);
-		panelPrincipalHistorico.add(tableHistorico);
 		tableHistorico.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"M\u00E9dia da casa", null},
-				{"Temperatura mais alta", null},
-				{"Temperatutra mais baixa", null},
-				{"Total de falhas", null},
-				{"Total de leituras erradas", null},
-				{"Total de leituras inconsistentes", null},
-				{"Total de avisos", null},
+				{"M\u00E9dia da Casa", null},
+				{"Divis\u00E3o mais quente", null},
+				{"Divis\u00E3o mais fria", null},
+				{"Total de Falhas", ""},
+				{"Total leituras erradas", null},
+				{"Total leituras inconcistentes", null},
+				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
+		tableHistorico.getColumnModel().getColumn(0).setPreferredWidth(147);
+		panel_1.setLayout(new MigLayout("", "[222px]", "[222.00px]"));
+		panel_1.add(tableHistorico, "cell 0 0,alignx left,aligny top");
 		
-		JDesktopPane desktopPaneEntradaPopUp = new JDesktopPane();
-		frame.getContentPane().add(desktopPaneEntradaPopUp, "name_77764873901482");
-		desktopPaneEntradaPopUp.setLayout(null);
-		
-		JTextPane textPane = new JTextPane();
-		textPane.setBounds(109, 115, 97, 20);
-		desktopPaneEntradaPopUp.add(textPane);
-		textPane.setText("Nome da x divis\u00E3o:");
-		
-		textField = new JTextField();
-		textField.setBounds(218, 115, 97, 20);
-		desktopPaneEntradaPopUp.add(textField);
-		textField.setColumns(10);
-		tableHistorico.getColumnModel().getColumn(0).setPreferredWidth(153);
+		JPanel panel_2 = new JPanel();
+		splitPaneHistorico.setRightComponent(panel_2);
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
