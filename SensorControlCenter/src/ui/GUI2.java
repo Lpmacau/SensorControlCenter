@@ -116,7 +116,6 @@ public class GUI2 {
 		ArrayList<String> divisoes = new ArrayList<String>();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JPanel panelEntrada = new JPanel();

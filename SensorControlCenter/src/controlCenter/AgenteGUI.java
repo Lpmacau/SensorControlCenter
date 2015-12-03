@@ -17,7 +17,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import ui.GUI;
+import ui.GUI2;
 
 public class AgenteGUI extends GuiAgent{
 
@@ -27,7 +27,7 @@ public class AgenteGUI extends GuiAgent{
 	private static final int BUTAOSAIR = -1;
 	
 	// GUI
-	transient protected GUI ui;
+	transient protected GUI2 ui;
 	
 	@Override
 	protected void takeDown() {
@@ -51,7 +51,7 @@ public class AgenteGUI extends GuiAgent{
 		super.setup();
 		
 		// Criacao do GUI
-		GUI.main(this);
+		GUI2.main(this);
 		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
