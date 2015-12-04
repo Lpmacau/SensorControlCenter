@@ -118,7 +118,7 @@ public class AgenteControlador extends Agent {
 		// Procurar todos os agentes na rede e adicionar comportamentos
 		this.getAllAgents();
 		this.addBehaviour(new ReceiveBehaviour());
-		this.addBehaviour(new RequestSensorBehaviour(this, 3000));
+		this.addBehaviour(new RequestSensorBehaviour(this, 1000));
 	}
 
 	// Comportamento de pedido de sensores
@@ -205,6 +205,19 @@ public class AgenteControlador extends Agent {
 							System.out.println("Agente[" + getLocalName() + "] " + answer.getContent());
 
 							int valor = Integer.parseInt(answer.getContent());
+							
+							// Validar valor para ver se nao é improvavel
+							int valido = validaValor(agente,valor);
+							
+							// Inferior
+							if(valido == -1){
+								lastErrors.put(agente, "Valor Improvável Inferior "+valor);
+							}
+							// Superior
+							if(valido == 1){
+								lastErrors.put(agente, "Valor Improvável Superior "+valor);
+							}
+							
 							// Inserir no historico e nos ultimos valores
 							if (history.containsKey(agente)) {
 								history.get(agente).add(new SensorValue(valor));
@@ -419,6 +432,28 @@ public class AgenteControlador extends Agent {
 		}
 
 		this.agentes = agentes;
+	}
+
+	public int validaValor(String agente, int valor) {
+		if(history.containsKey(agente)){
+			int tamanho = history.get(agente).size();
+			if(tamanho>3){
+				int valor1,valor2;
+				valor1 = history.get(agente).get(tamanho-1).valor;
+				valor2 = history.get(agente).get(tamanho-2).valor;
+				
+				// Valor improvável inferior
+				if((valor>-20 && valor<-6) && (valor1>-20 && valor1<-6) && (valor2>-20 && valor2<-6)){
+					return -1;
+				}
+				
+				// Valor imporovavel superior
+				if((valor>40 && valor<50) && (valor1>40 && valor1<50) && (valor2>40 && valor2<50)){
+					return 1;
+				}
+			}
+		}
+		return 0;
 	}
 
 	public void createSensorAgent(String nome) throws StaleProxyException {
