@@ -72,6 +72,11 @@ public class GUI {
 	private JTable tableHistorico;
 	private ArrayList<String> divisoes;
 	private Timer rtemperaturas;
+	private JFreeChart chart;
+	private Panel panel_3;
+	private DefaultCategoryDataset dataset;
+	
+	private int iteracoes = 0;
 	
 	/**
 	 * Launch the application.
@@ -216,13 +221,14 @@ public class GUI {
 		splitPaneHome.setRightComponent(panel);
 		panel.setLayout(null);
 		
-		Panel panel_3 = new Panel();
+		panel_3 = new Panel();
+		chart = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, false, false, false);
+		dataset = new DefaultCategoryDataset();
 		rtemperaturas = new Timer(3000,new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				updateTemperaturas();
 				
-				GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
-				agGUI.postGuiEvent(ge);
 				
 			}
 		});
@@ -311,6 +317,12 @@ public class GUI {
 	}
 	
 
+	protected void updateTemperaturas() {
+		GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
+		agGUI.postGuiEvent(ge);
+		
+	}
+
 	public void ola(){
 		System.out.println("OLA");
 	}
@@ -351,23 +363,31 @@ public class GUI {
 	public void chartTempAct(Map<String,List<Integer>> graficos){
 		String sens;
 		int temp;
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
 			sens = l.getKey();
-			temp= l.getValue().get(l.getValue().size()-1);
-			dataset.setValue(temp,"",sens);
-			System.out.println("");
+			if(!l.getValue().isEmpty()){
+				for(int valor : l.getValue()){
+					temp = valor;
+					dataset.addValue(temp, sens, String.valueOf(iteracoes));
+				}
+			}
+			else {
+				temp = -1;
+				dataset.addValue(temp, sens, String.valueOf(iteracoes));
+			}
 		}
-		JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+
+		chart = ChartFactory.createLineChart("Temperaturas Casa", "Segundos", "Graus Celsius", dataset, PlotOrientation.VERTICAL, false, false, false);
+		
 		CategoryPlot catPlot = chart.getCategoryPlot();
 		catPlot.setRangeMinorGridlinePaint(Color.BLACK);
 		
 		ChartPanel chartPanel = new ChartPanel(chart);
+		iteracoes+=3;
 		
-		
-		/*panel_3.removeAll();
+		panel_3.removeAll();
 		panel_3.add(chartPanel, BorderLayout.CENTER);
-		panel_3.validate();*/
+		panel_3.validate();
 		
 	}
 

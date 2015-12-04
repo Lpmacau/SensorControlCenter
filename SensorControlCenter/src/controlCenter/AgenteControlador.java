@@ -243,6 +243,10 @@ public class AgenteControlador extends Agent {
 								for(Map.Entry<String,Integer> l : lastValues.entrySet()){
 									inform.addUserDefinedParameter(l.getKey(), ""+l.getValue());
 								}
+								
+								for(Map.Entry<String,String> l : lastErrors.entrySet()){
+									inform.addUserDefinedParameter(l.getKey(), l.getValue());
+								}
 								send(inform);
 							}
 							else System.out.println("NULISSIMO");
