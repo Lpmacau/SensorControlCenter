@@ -54,6 +54,7 @@ import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Panel;
 import javax.swing.JComboBox;
+import javax.swing.Timer;
 
 public class GUI {
 	
@@ -67,6 +68,8 @@ public class GUI {
 	private JTable tableHome;
 	private JTable tableHistorico;
 	private ArrayList<String> divisoes;
+	private Timer rtemperaturas;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -211,14 +214,14 @@ public class GUI {
 		panel.setLayout(null);
 		
 		Panel panel_3 = new Panel();
-		panel_3.addMouseListener(new MouseAdapter() {
+		rtemperaturas = new Timer(3000,new ActionListener(){
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				int s1 = 1;
 				int s2 = 10;
 				int s3 = 20;
 				int s4 = 4;
-				
+				System.out.println("Eu estive aqui");
 				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 				dataset.setValue(s1, "", "Sala");
 				dataset.setValue(s2, "", "Cozinha");
@@ -235,6 +238,7 @@ public class GUI {
 				panel_3.validate();
 			}
 		});
+		
 		panel_3.setBounds(10, 10, 190, 150);
 		panel.add(panel_3);
 		panel_3.setLayout(new BorderLayout(0, 0));
@@ -350,6 +354,8 @@ public class GUI {
 		//Mostrar menu principal
 		CardLayout c = (CardLayout) frame.getContentPane().getLayout();
 		c.show(frame.getContentPane(), "Principal");
+		//Iniciar timer para as temperaturas
+		rtemperaturas.start();
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
