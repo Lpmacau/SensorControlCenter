@@ -33,9 +33,12 @@ public class AgenteGUI extends GuiAgent {
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
 	private static final int TEMPERATURAS = 2;
+	private static final int ERROS = 3;
 
 	private List<String> sensores;
 	private Map<String,List<Integer>> graficos;
+	private Map<String,String> errosSensores;
+	
 	// GUI
 	transient protected GUI ui;
 
@@ -103,21 +106,30 @@ public class AgenteGUI extends GuiAgent {
 				}
 				
 				else if(msg.getPerformative() == ACLMessage.INFORM){
-					if (text.equals("update")){
+					if (text.equals("updateValores")){
 						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos valores");
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
 						for(String a : sensores){
 							if(nomes.get(a)!=null){
-								int valor = Integer.parseInt((String)nomes.get(a));
 								if(graficos.get(a)!=null){
+									int valor = Integer.parseInt((String)nomes.get(a));
 									graficos.get(a).add(valor);
+									System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor);
 								}
-								System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor);
 							}
-							else{
-								System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> erro");
-							}
+						}
+					}
+					
+					if (text.equals("updateErros")){
+						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos valores");
+						Properties nomes = msg.getAllUserDefinedParameters();
+						
+						for(String a : sensores){
+							System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> erro");
+							/*if(nomes.get(a)!=null){
+								errosSensores.put(a,(String) nomes.get(a));
+							}*/
 						}
 					}
 				}
@@ -178,11 +190,17 @@ public class AgenteGUI extends GuiAgent {
 			send(request);
 			doDelete();
 		}
-		
+
 		//Pedido de temperaturas para chart actual
 		else if (command == TEMPERATURAS) {
 			GUI g = (GUI) ev.getSource();
 			g.chartTempAct(graficos);
+		}
+		
+		//Pedido de temperaturas para chart actual
+		else if (command == ERROS) {
+			GUI g = (GUI) ev.getSource();
+			g.ultimosErros(errosSensores);
 		}
 		
 		

@@ -238,21 +238,50 @@ public class AgenteControlador extends Agent {
 
 								inform.setConversationId("" + time);
 								inform.addReceiver(receiver);
-								inform.setContent("update");
+								inform.setContent("updateValores");
 								
 								for(Map.Entry<String,Integer> l : lastValues.entrySet()){
 									inform.addUserDefinedParameter(l.getKey(), ""+l.getValue());
 								}
 								
-								for(Map.Entry<String,String> l : lastErrors.entrySet()){
-									inform.addUserDefinedParameter(l.getKey(), l.getValue());
-								}
 								send(inform);
 							}
 							else System.out.println("NULISSIMO");
 						}
 					}
 				});
+				
+
+				myAgent.addBehaviour(new OneShotBehaviour() {
+					@Override
+					public void action() {
+						if(agentes.containsKey("gui")){
+							String gui = agentes.get("gui").get(0);
+							if(gui!=null){
+								AID receiver = new AID();
+								receiver.setLocalName(gui);
+
+								ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+								long time = System.currentTimeMillis();
+
+								inform.setConversationId("" + time);
+								inform.addReceiver(receiver);
+								inform.setContent("updateErros");
+								
+
+								for(Map.Entry<String,String> l : lastErrors.entrySet()){
+									inform.addUserDefinedParameter(l.getKey(), l.getValue());
+								}
+								
+								send(inform);
+							}
+							else System.out.println("NULISSIMO");
+						}
+					}
+				});
+				
+
+				
 				System.out.println("----------------------------------------");
 				System.out.println("ERROS ATUAIS:");
 				for (Map.Entry<String, List<SensorError>> entrada : sensorErrors.entrySet()) {

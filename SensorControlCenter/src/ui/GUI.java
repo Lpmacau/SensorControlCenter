@@ -64,6 +64,7 @@ public class GUI {
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
 	private static final int TEMPERATURAS = 2;
+	private static final int ERROS = 3;
 
 	private static JFrame frame;
 	private AgenteGUI agGUI;
@@ -228,7 +229,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				updateTemperaturas();
-				
+				updateErros();
 				
 			}
 		});
@@ -317,6 +318,13 @@ public class GUI {
 	}
 	
 
+	protected void updateErros() {
+
+		GuiEvent ge = new GuiEvent(this,ERROS);
+		agGUI.postGuiEvent(ge);
+		
+	}
+
 	protected void updateTemperaturas() {
 		GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
 		agGUI.postGuiEvent(ge);
@@ -359,8 +367,31 @@ public class GUI {
 	}
 	
 	//refresh chart panel3
-	
 	public void chartTempAct(Map<String,List<Integer>> graficos){
+		String sens;
+		int temp;
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
+			sens = l.getKey();
+			if(!l.getValue().isEmpty()){
+				temp = l.getValue().get(l.getValue().size()-1);
+				dataset.setValue(temp,"",sens);
+			}
+		}
+		JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "Graus Celsius", dataset, PlotOrientation.VERTICAL, false, false, false);
+		CategoryPlot catPlot = chart.getCategoryPlot();
+		catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+		
+		ChartPanel chartPanel = new ChartPanel(chart);
+		
+		
+		panel_3.removeAll();
+		panel_3.add(chartPanel, BorderLayout.CENTER);
+		panel_3.validate();
+		
+	}
+	
+	public void chartTempActLinhas(Map<String,List<Integer>> graficos){
 		String sens;
 		int temp;
 		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
@@ -388,6 +419,10 @@ public class GUI {
 		panel_3.removeAll();
 		panel_3.add(chartPanel, BorderLayout.CENTER);
 		panel_3.validate();
+		
+	}
+
+	public void ultimosErros(Map<String, String> errosSensores) {
 		
 	}
 
