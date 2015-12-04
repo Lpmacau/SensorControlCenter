@@ -57,8 +57,6 @@ import java.awt.Color;
 import java.awt.Panel;
 import javax.swing.JComboBox;
 import javax.swing.Timer;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 public class GUI {
 	
@@ -66,6 +64,7 @@ public class GUI {
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
 	private static final int TEMPERATURAS = 2;
+	private static final int ERROS = 3;
 
 	private static JFrame frame;
 	private AgenteGUI agGUI;
@@ -75,14 +74,14 @@ public class GUI {
 	private ArrayList<String> divisoes;
 	private Timer rtemperaturas;
 	private JFreeChart chart;
+	private JFreeChart chart1;
 	private Panel panel_3;
+	private Panel panel_4;
 	private DefaultCategoryDataset dataset;
-	private JTextArea textErros;
-
-	private String divisaoMaisQuente, divisaoMaisFria;
-	private int totalTimeout,totalErrada,totalIncon,numDivisoes,totalTemp,mediaCasa,maisQuente, maisFria;
+	private DefaultCategoryDataset dataset1;
 	
 	private int iteracoes = 0;
+	private int mais60sec = 0;
 	
 	/**
 	 * Launch the application.
@@ -133,7 +132,7 @@ public class GUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 937, 512);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JPanel panelEntrada = new JPanel();
@@ -179,7 +178,7 @@ public class GUI {
 		
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 434, 21);
+		menuBar.setBounds(0, 0, 921, 21);
 		panelPrincipal.add(menuBar);
 		
 		JMenu mnSensorcenas = new JMenu("SensorCenas");
@@ -189,7 +188,7 @@ public class GUI {
 		mnSensorcenas.add(mntmSair);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 21, 434, 240);
+		tabbedPane.setBounds(0, 21, 921, 453);
 		panelPrincipal.add(tabbedPane);
 		
 		JSplitPane splitPaneHome = new JSplitPane();
@@ -201,10 +200,10 @@ public class GUI {
 		tableHome = new JTable();
 		tableHome.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"M\u00E9dia da Casa", null},
+				{"M\u00E9dia Casa", null},
 				{"Divis\u00E3o mais quente", null},
 				{"Divis\u00E3o mais fria", null},
-				{"Leituras sem resposta", null},
+				{"Total Falhas", null},
 				{"Leituras erradas", null},
 				{"Leituras inconsistentes", null},
 				{null, null},
@@ -220,38 +219,35 @@ public class GUI {
 		JLabel lblAvisos = new JLabel("Avisos:");
 		panelEsquerda.add(lblAvisos, "cell 0 1");
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panelEsquerda.add(scrollPane, "cell 0 2,grow");
-		
-		textErros = new JTextArea();
-		scrollPane.setViewportView(textErros);
+		JLabel lblAvisos1 = new JLabel("Inserir aqui os avisos");
+		panelEsquerda.add(lblAvisos1, "cell 0 2,growx");
 		
 		JPanel panel = new JPanel();
 		splitPaneHome.setRightComponent(panel);
 		panel.setLayout(null);
 		
 		panel_3 = new Panel();
-		chart = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, true, false, false);
+		chart = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, false, false, false);
 		dataset = new DefaultCategoryDataset();
-		rtemperaturas = new Timer(1000,new ActionListener(){
+		rtemperaturas = new Timer(3000,new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				updateTemperaturas();
+				updateErros();
 				
 			}
 		});
 		
-		panel_3.setBounds(10, 10, 190, 150);
+		panel_3.setBounds(10, 10, 687, 363);
 		panel.add(panel_3);
 		panel_3.setLayout(new BorderLayout(0, 0));
 		
 		JLabel label = new JLabel("Escolha a divis\u00E3o:");
-		label.setBounds(10, 182, 91, 14);
+		label.setBounds(458, 395, 115, 14);
 		panel.add(label);
 		
 		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(95, 179, 105, 20);
+		comboBox_1.setBounds(582, 392, 105, 20);
 		panel.add(comboBox_1);
 		
 		JSplitPane splitPaneHistorico = new JSplitPane();
@@ -266,9 +262,9 @@ public class GUI {
 				{"M\u00E9dia da Casa", null},
 				{"Divis\u00E3o mais quente", null},
 				{"Divis\u00E3o mais fria", null},
-				{"Leituras sem resposta", ""},
-				{"Leituras erradas", null},
-				{"Leituras inconcistentes", null},
+				{"Total de Falhas", ""},
+				{"Total leituras erradas", null},
+				{"Total leituras inconcistentes", null},
 				{null, null},
 			},
 			new String[] {
@@ -283,8 +279,10 @@ public class GUI {
 		splitPaneHistorico.setRightComponent(panel_2);
 		panel_2.setLayout(null);
 		
-		Panel panel_4 = new Panel();
-		panel_4.addMouseListener(new MouseAdapter() {
+		panel_4 = new Panel();
+		chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, false, false, false);
+		dataset1 = new DefaultCategoryDataset();
+		/*panel_4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int s1 = 1;
@@ -307,32 +305,31 @@ public class GUI {
 				panel_4.add(chartPanel, BorderLayout.CENTER);
 				panel_4.validate();
 			}
-		});
-		panel_4.setBounds(10, 10, 166, 151);
+		});*/
+		panel_4.setBounds(10, 10, 663, 361);
 		panel_2.add(panel_4);
 		panel_4.setLayout(new BorderLayout(0, 0));
 		
 		JLabel lblEscolhaADiviso = new JLabel("Escolha a divis\u00E3o:");
-		lblEscolhaADiviso.setBounds(10, 185, 91, 14);
+		lblEscolhaADiviso.setBounds(440, 395, 112, 14);
 		panel_2.add(lblEscolhaADiviso);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(95, 182, 81, 20);
+		comboBox.setBounds(551, 392, 112, 20);
 		panel_2.add(comboBox);
 		
 		//Mostrar menu principal
 		//CardLayout c = (CardLayout) frame.getContentPane().getLayout();
 		//c.show(frame.getContentPane(), "Principal");
-		
-
-		divisaoMaisQuente = divisaoMaisFria = "";
-		maisFria = 1000;
-		totalTemp = 0;
-		maisQuente = -1000;
-		totalTimeout = totalErrada = totalIncon = 0;
-		numDivisoes=0;
 	}
 	
+
+	protected void updateErros() {
+
+		GuiEvent ge = new GuiEvent(this,ERROS);
+		agGUI.postGuiEvent(ge);
+		
+	}
 
 	protected void updateTemperaturas() {
 		GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
@@ -352,7 +349,7 @@ public class GUI {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.exit(0);
@@ -403,90 +400,62 @@ public class GUI {
 	public void chartTempActLinhas(Map<String,List<Integer>> graficos){
 		String sens;
 		int temp;
+		
 		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
 			sens = l.getKey();
 			if(!l.getValue().isEmpty()){
-				for(int valor : l.getValue()){
-					temp = valor;
-					dataset.addValue(temp, sens, String.valueOf(iteracoes));
+				if(l.getValue().size()<=20)
+				{
+					for ( int i=1;i<=l.getValue().size();i++){
+						
+						//for(int valor : l.getValue()){
+						temp = l.getValue().get(i-1);
+						System.out.println("historico value-> "+temp+" --> "+i);
+						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
+					}
+				}
+				else{
+					
+					for ( int i=1;i<=l.getValue().size();i++){
+						
+						//for(int valor : l.getValue()){
+						temp = l.getValue().get(i-1);
+						System.out.println("historico value-> "+temp+" --> "+i);
+						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
+						dataset1.removeColumn(i);
+					}
+					/*if(iteracoes % 60 == 0){
+						dataset1 = new DefaultCategoryDataset();
+					}
+					for ( int i=l.getValue().size()-19,iteracoes=63;i<=l.getValue().size()-1;i++){
+						temp = l.getValue().get(i);
+						System.out.println("historico value +60 -> "+temp+" --> "+i);
+						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
+						dataset1.removeColumn(columnIndex);
+					}*/
 				}
 			}
 			else {
 				temp = -1;
-				dataset.addValue(temp, sens, String.valueOf(iteracoes));
+				dataset1.addValue(temp, sens, String.valueOf(iteracoes));
 			}
 		}
 
-		chart = ChartFactory.createLineChart("Temperaturas Casa", "Segundos", "Graus Celsius", dataset, PlotOrientation.VERTICAL, true, false, false);
+		iteracoes+=3;
+		JFreeChart chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Segundos", "Graus Celsius", dataset1, PlotOrientation.VERTICAL, true, true, false);
 		
-		CategoryPlot catPlot = chart.getCategoryPlot();
+		CategoryPlot catPlot = chart1.getCategoryPlot();
 		catPlot.setRangeMinorGridlinePaint(Color.BLACK);
 		
-		ChartPanel chartPanel = new ChartPanel(chart);
-		iteracoes+=3;
+		ChartPanel chartPanel = new ChartPanel(chart1);
 		
-		panel_3.removeAll();
-		panel_3.add(chartPanel, BorderLayout.CENTER);
-		panel_3.validate();
+		panel_4.removeAll();
+		panel_4.add(chartPanel, BorderLayout.CENTER);
+		panel_4.validate();
 		
 	}
 
 	public void ultimosErros(Map<String, String> errosSensores) {
-		
-		for(Map.Entry<String, String> e : errosSensores.entrySet()){
-			textErros.setText(textErros.getText()+e.getKey()+" -> "+e.getValue()+"\n");
-		}
-	}
-	
-	public void showStats(Map<String,List<Integer>> graficos, Map<String, String> errosSensores){
-		// Stats
-		int it=0;
-		numDivisoes += graficos.keySet().size();
-		
-		for(String erro : errosSensores.values()){
-			if(erro=="timeout") totalTimeout++;
-			if(erro=="XXXXX") totalErrada++;
-			else totalIncon++;
-		}
-		
-		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
-			String sens = l.getKey();
-			if(!l.getValue().isEmpty() && l.getValue().size()>0){
-				int valor = l.getValue().get(l.getValue().size()-1);
-				if(valor<maisFria){
-					maisFria = valor;
-					divisaoMaisFria = sens;
-				}
-				if(valor>maisQuente){
-					maisQuente = valor;
-					divisaoMaisQuente = sens;
-				}
-				if(it==0){
-					it = l.getValue().size();
-				}
-				totalTemp+=valor;
-			}
-		}
-		
-		if(it!=0 || totalTemp != 0){
-			mediaCasa = totalTemp/numDivisoes;
-		}
-		
-		
-
-		tableHistorico.setModel(new DefaultTableModel(
-			new Object[][] {
-				{"M\u00E9dia da Casa", mediaCasa},
-				{"Divis\u00E3o mais quente", divisaoMaisQuente + " -> "+maisQuente},
-				{"Divis\u00E3o mais fria", divisaoMaisFria+ " -> "+maisFria},
-				{"Leituras sem resposta", totalTimeout},
-				{"Leituras erradas", totalErrada},
-				{"Leituras inconcistentes", totalIncon},
-			},
-			new String[] {
-				"New column", "New column"
-			}
-		));
 		
 	}
 
