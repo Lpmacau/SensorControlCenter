@@ -347,6 +347,9 @@ public class GUI {
 			ge.addParameter(nome);
 		}
 		agGUI.postGuiEvent(ge);
+		//Mostrar menu principal
+		CardLayout c = (CardLayout) frame.getContentPane().getLayout();
+		c.show(frame.getContentPane(), "Principal");
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
