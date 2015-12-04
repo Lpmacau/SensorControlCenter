@@ -63,6 +63,7 @@ public class AgenteGUI extends GuiAgent {
 		super.setup();
 		this.sensores = new ArrayList<String>();
 		this.graficos = new HashMap<String,List<Integer>>();
+		this.errosSensores = new HashMap<String,String>();
 		
 		
 		// Criacao do GUI
@@ -121,15 +122,15 @@ public class AgenteGUI extends GuiAgent {
 						}
 					}
 					
-					if (text.equals("updateErros")){
-						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos valores");
+					else if (text.equals("updateErros")){
+						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos erros");
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
 						for(String a : sensores){
-							System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> erro");
-							/*if(nomes.get(a)!=null){
+							if(nomes.get(a)!=null){
 								errosSensores.put(a,(String) nomes.get(a));
-							}*/
+								System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+nomes.getProperty(a));
+							}
 						}
 					}
 				}

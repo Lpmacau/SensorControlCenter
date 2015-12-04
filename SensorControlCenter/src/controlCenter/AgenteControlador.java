@@ -196,7 +196,8 @@ public class AgenteControlador extends Agent {
 								sensorErrors.put(agente, lista);
 							}
 
-							lastErrors.put(agente, "timeout");
+							if(answer==null) lastErrors.put(agente, "timeout");
+							else lastErrors.put(agente, "XXXXX");
 						}
 
 						// Resposta do sensor
