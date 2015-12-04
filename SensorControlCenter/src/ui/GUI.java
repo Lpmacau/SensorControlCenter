@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.awt.event.WindowEvent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -61,6 +63,7 @@ public class GUI {
 
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
+	private static final int TEMPERATURAS = 2;
 
 	private static JFrame frame;
 	private AgenteGUI agGUI;
@@ -153,7 +156,7 @@ public class GUI {
 		lblSensorcenas.setBounds(185, 48, 63, 14);
 		panelEntrada.add(lblSensorcenas);
 		
-		JLabel lblNmeroDeDivises = new JLabel("N\u00FAmero de Divis\u00F5es:");
+		JLabel lblNmeroDeDivises = new JLabel("Número de Divisões:");
 		lblNmeroDeDivises.setBounds(168, 126, 107, 14);
 		panelEntrada.add(lblNmeroDeDivises);
 		
@@ -217,25 +220,10 @@ public class GUI {
 		rtemperaturas = new Timer(3000,new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int s1 = 1;
-				int s2 = 10;
-				int s3 = 20;
-				int s4 = 4;
-				System.out.println("Eu estive aqui");
-				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-				dataset.setValue(s1, "", "Sala");
-				dataset.setValue(s2, "", "Cozinha");
-				dataset.setValue(s3, "", "divisao3");
-				dataset.setValue(s4, "", "divisao4");
 				
-				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
-				CategoryPlot catPlot = chart.getCategoryPlot();
-				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+				GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
+				agGUI.postGuiEvent(ge);
 				
-				ChartPanel chartPanel = new ChartPanel(chart);
-				panel_3.removeAll();
-				panel_3.add(chartPanel, BorderLayout.CENTER);
-				panel_3.validate();
 			}
 		});
 		
@@ -357,8 +345,33 @@ public class GUI {
 		//Iniciar timer para as temperaturas
 		rtemperaturas.start();
 	}
+	
+	//refresh chart panel3
+	
+	public void chartTempAct(Map<String,List<Integer>> graficos){
+		String sens;
+		int temp;
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
+			sens = l.getKey();
+			temp= l.getValue().get(l.getValue().size()-1);
+			dataset.setValue(temp,"",sens);
+			System.out.println("");
+		}
+		JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
+		CategoryPlot catPlot = chart.getCategoryPlot();
+		catPlot.setRangeMinorGridlinePaint(Color.BLACK);
+		
+		ChartPanel chartPanel = new ChartPanel(chart);
+		
+		
+		/*panel_3.removeAll();
+		panel_3.add(chartPanel, BorderLayout.CENTER);
+		panel_3.validate();*/
+		
+	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) {
+	/*private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
@@ -374,5 +387,5 @@ public class GUI {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
-	}
+	}*/
 }

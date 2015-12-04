@@ -32,6 +32,7 @@ public class AgenteGUI extends GuiAgent {
 
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
+	private static final int TEMPERATURAS = 2;
 
 	private List<String> sensores;
 	private Map<String,List<Integer>> graficos;
@@ -176,6 +177,14 @@ public class AgenteGUI extends GuiAgent {
 			}
 			send(request);
 			doDelete();
+		}
+		
+		//Pedido de temperaturas para chart actual
+		else if (command == TEMPERATURAS) {
+			System.out.println("Olha um pedido Fresquinho!!");
+			GUI g = (GUI) ev.getSource();
+			System.out.println("Olha um pedido Fresquinho2!!");
+			g.chartTempAct(graficos);
 		}
 		
 		
