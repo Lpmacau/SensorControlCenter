@@ -44,7 +44,7 @@ public class popUpDivisoes extends JDialog {
 		contentPanel.add(textField);
 		
 		JTextPane textPane = new JTextPane();
-		textPane.setText("Nome da x divis\u00E3o:");
+		textPane.setText("Nome da divisão:");
 		textPane.setBounds(10, 34, 97, 20);
 		contentPanel.add(textPane);
 		{
