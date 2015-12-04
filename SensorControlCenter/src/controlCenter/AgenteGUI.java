@@ -123,6 +123,7 @@ public class AgenteGUI extends GuiAgent {
 					}
 					
 					else if (text.equals("updateErros")){
+						errosSensores.clear();
 						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos erros");
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
@@ -196,18 +197,12 @@ public class AgenteGUI extends GuiAgent {
 		else if (command == TEMPERATURAS) {
 			GUI g = (GUI) ev.getSource();
 			g.chartTempAct(graficos);
-			g.chartTempActLinhas(graficos);
-		}
-		
-		//Pedido de temperaturas para chart actual
-		else if (command == ERROS) {
-			GUI g = (GUI) ev.getSource();
 			g.ultimosErros(errosSensores);
+			g.showStats(graficos,errosSensores);
 		}
 		
 		
 		
-		/* COmo passar cenas para a GUI
 		 * Obter objeto e invocar metodos do GUI 
 		 
 
