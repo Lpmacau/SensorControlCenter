@@ -120,6 +120,7 @@ public class AgenteControlador extends Agent {
 		this.addBehaviour(new ReceiveBehaviour());
 		this.addBehaviour(new RequestSensorBehaviour(this, 1000));
 	}
+	
 
 	// Comportamento de pedido de sensores
 	private class RequestSensorBehaviour extends TickerBehaviour {

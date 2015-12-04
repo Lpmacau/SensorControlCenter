@@ -443,6 +443,7 @@ public class GUI {
 		int it=0;
 		numDivisoes += graficos.keySet().size();
 		
+		
 		for(String erro : errosSensores.values()){
 			if(erro=="timeout") totalTimeout++;
 			if(erro=="XXXXX") totalErrada++;

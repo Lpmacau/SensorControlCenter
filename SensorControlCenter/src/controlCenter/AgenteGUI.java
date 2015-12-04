@@ -201,6 +201,7 @@ public class AgenteGUI extends GuiAgent {
 		}
 		
 		
+		
 		else
 			System.out.println("Agente[" + this.getLocalName() + "] COMANDO ERRADO");
 
