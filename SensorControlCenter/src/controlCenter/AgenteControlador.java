@@ -118,7 +118,7 @@ public class AgenteControlador extends Agent {
 		// Procurar todos os agentes na rede e adicionar comportamentos
 		this.getAllAgents();
 		this.addBehaviour(new ReceiveBehaviour());
-		this.addBehaviour(new RequestSensorBehaviour(this, 1000));
+		this.addBehaviour(new RequestSensorBehaviour(this, 3000));
 	}
 	
 

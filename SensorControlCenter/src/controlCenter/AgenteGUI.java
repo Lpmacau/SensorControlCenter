@@ -197,21 +197,10 @@ public class AgenteGUI extends GuiAgent {
 		else if (command == TEMPERATURAS) {
 			GUI g = (GUI) ev.getSource();
 			g.chartTempAct(graficos);
+			g.chartTempActLinhas(graficos);
 			g.ultimosErros(errosSensores);
 			g.showStats(graficos,errosSensores);
 		}
-		
-		
-		
-		 * Obter objeto e invocar metodos do GUI 
-		 
-
-		GUI g = (GUI2) ev.getSource();
-		g.ola();*/
-		
-		
-		
-		
 		
 		
 		

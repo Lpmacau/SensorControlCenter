@@ -80,7 +80,11 @@ public class GUI {
 	private Panel panel_4;
 	private DefaultCategoryDataset dataset;
 	private DefaultCategoryDataset dataset1;
-	
+
+	private JTextArea textErros;
+
+	private String divisaoMaisQuente, divisaoMaisFria;
+	private int totalTimeout,totalErrada,totalIncon,numDivisoes,totalTemp,mediaCasa,maisQuente, maisFria;
 	private int iteracoes = 0;
 	
 	/**
@@ -285,30 +289,6 @@ public class GUI {
 		panel_4 = new Panel();
 		chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, false, false, false);
 		dataset1 = new DefaultCategoryDataset();
-		/*panel_4.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				int s1 = 1;
-				int s2 = 10;
-				int s3 = 20;
-				int s4 = 4;
-				
-				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-				dataset.setValue(s1, "", "Sala");
-				dataset.setValue(s2, "", "Cozinha");
-				dataset.setValue(s3, "", "divisao3");
-				dataset.setValue(s4, "", "divisao4");
-				
-				JFreeChart chart = ChartFactory.createBarChart("Temperaturas Casa", "", "", dataset, PlotOrientation.VERTICAL, false, false, false);
-				CategoryPlot catPlot = chart.getCategoryPlot();
-				catPlot.setRangeMinorGridlinePaint(Color.BLACK);
-				
-				ChartPanel chartPanel = new ChartPanel(chart);
-				panel_4.removeAll();
-				panel_4.add(chartPanel, BorderLayout.CENTER);
-				panel_4.validate();
-			}
-		});*/
 		panel_4.setBounds(10, 10, 663, 361);
 		panel_2.add(panel_4);
 		panel_4.setLayout(new BorderLayout(0, 0));
@@ -446,7 +426,7 @@ public class GUI {
 		}
 
 		iteracoes+=3;
-		JFreeChart chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Segundos", "Graus Celsius", dataset1, PlotOrientation.VERTICAL, true, true, false);
+		chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Segundos", "Graus Celsius", dataset1, PlotOrientation.VERTICAL, true, true, false);
 		
 		CategoryPlot catPlot = chart1.getCategoryPlot();
 		catPlot.setRangeMinorGridlinePaint(Color.BLACK);
