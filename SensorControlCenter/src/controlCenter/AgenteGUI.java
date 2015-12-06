@@ -33,7 +33,7 @@ public class AgenteGUI extends GuiAgent {
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
 	private static final int TEMPERATURAS = 2;
-	private static final int ERROS = 3;
+	private static final int BUTAOTEMPAMB = 3;
 
 	private List<String> sensores;
 	private Map<String,List<Integer>> graficos;
@@ -46,11 +46,18 @@ public class AgenteGUI extends GuiAgent {
 		public String movimento;
 		public String estado;
 		
-		public EstadoAC(String nome, String movimento, String estado){
-			nome = nome;
-			movimento = movimento;
-			estado = estado;
+		public EstadoAC(){
+			nome = "";
+			movimento = "0";
+			estado = "off";
 		}
+		
+		public EstadoAC(String nome, String movimento, String estado){
+			this.nome = nome;
+			this.movimento = movimento;
+			this.estado = estado;
+		}
+		
 	}
 	
 	
@@ -115,7 +122,6 @@ public class AgenteGUI extends GuiAgent {
 			if (msg != null) {
 				String text = msg.getContent();
 
-				
 				if(msg.getPerformative() == ACLMessage.INFORM){
 					if (text.equals("updateValores")){
 						Properties nomes = msg.getAllUserDefinedParameters();
@@ -124,22 +130,39 @@ public class AgenteGUI extends GuiAgent {
 							if(nomes.get(a)!=null){
 								if(graficos.get(a)!=null){
 									int valor = Integer.parseInt((String)nomes.get(a));
+									EstadoAC estado = new EstadoAC();
 									int movimento = 0;
 									String ac = "off";
 									graficos.get(a).add(valor);
 
 									if(nomes.get(a+"Movimento")!=null) {
 										movimento = Integer.parseInt((String)nomes.get(a+"Movimento"));
+										estado.movimento = (String)nomes.get(a+"Movimento");
 										System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor+" Movimento: "+movimento);
 									}
 									
 									if(nomes.get(a+"AC")!=null) {
 										 ac = (String) nomes.get(a+"AC");
+										 estado.estado= ac;
 										System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor+" AC: "+ac);
 									}
 									
-									EstadoAC estado = new EstadoAC(a,""+movimento,""+valor);
-									estadoAtual.add(estado);
+									estado.nome=a;
+									
+									if(!(a.contains("Movimento") || a.contains("AC"))){
+										int sub = 0;
+										for(EstadoAC e: estadoAtual){
+											if( e.nome.equals(a)){
+												int index = estadoAtual.indexOf(e);
+												estadoAtual.remove(index);
+												estadoAtual.add(index, estado);
+												sub=1;
+											}
+										}
+										if(sub==0){
+											estadoAtual.add(estado);
+										}
+									}
 								}
 							}
 						}
@@ -223,8 +246,25 @@ public class AgenteGUI extends GuiAgent {
 			g.ultimosErros(errosSensores);
 			g.showStats(graficos,errosSensores);
 			g.estadoAC(estadoAtual);
+
+			estadoAtual.clear();
 		}
 		
+		
+		else if (command == BUTAOTEMPAMB) {
+			AID receiver = new AID();
+			receiver.setLocalName("agControlador");
+
+			ACLMessage request = new ACLMessage(ACLMessage.INFORM);
+			long time = System.currentTimeMillis();
+
+			request.setConversationId("" + time);
+			request.addReceiver(receiver);
+			request.setContent("updateTemperaturaAmbiente");
+			
+			request.addUserDefinedParameter("updateTemperaturaAmbiente", ""+ev.getAllParameter().next());
+			send(request);
+		}
 		
 		
 

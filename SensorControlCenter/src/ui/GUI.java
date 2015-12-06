@@ -1,43 +1,36 @@
 package ui;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-
-import controlCenter.AgenteGUI;
-import controlCenter.AgenteGUI.EstadoAC;
-import jade.gui.GuiEvent;
-
-import javax.swing.JButton;
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowStateListener;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.awt.event.WindowEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
-import javax.swing.JDesktopPane;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JTextPane;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingUtilities;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import java.awt.CardLayout;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.jfree.chart.ChartFactory;
@@ -47,21 +40,14 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
+import jade.gui.GuiEvent;
+
+import controlCenter.AgenteGUI;
+import controlCenter.AgenteGUI.EstadoAC;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JLabel;
-import java.awt.Color;
-import java.awt.Panel;
-import javax.swing.JComboBox;
-import javax.swing.Timer;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import java.awt.Font;
-import java.awt.TextArea;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Rectangle;
 
 public class GUI {
 	
@@ -69,6 +55,7 @@ public class GUI {
 	private static final int BUTAOOK = 1;
 	private static final int BUTAOSAIR = -1;
 	private static final int TEMPERATURAS = 2;
+	private static final int BUTAOTEMPAMB = 3;
 
 	private static JFrame frame;
 	private AgenteGUI agGUI;
@@ -83,6 +70,7 @@ public class GUI {
 	private Panel panel_4;
 	private DefaultCategoryDataset dataset;
 	private DefaultCategoryDataset dataset1;
+	private JTextArea textAC;
 
 	private JTextArea textErros;
 
@@ -194,9 +182,19 @@ public class GUI {
 		menuBar.add(mnSensorcenas);
 		
 		JMenuItem mntmDefinirTemperaturaAmbiente = new JMenuItem("Temperatura Ambiente");
+		mntmDefinirTemperaturaAmbiente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				butaoTemperaturaAmbiente();
+			}
+		});
 		mnSensorcenas.add(mntmDefinirTemperaturaAmbiente);
 		
 		JMenuItem mntmSair = new JMenuItem("Sair");
+		mntmSair.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				butaoSair();
+			}
+		});
 		mnSensorcenas.add(mntmSair);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -297,14 +295,9 @@ public class GUI {
 		tabbedPane.addTab("Climatização", null, climatizacao, null);
 		climatizacao.setLayout(null);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(0, 420, 916, -418);
-		climatizacao.add(scrollPane_1);
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(0, 0, 916, 425);
-		climatizacao.add(textArea);
-		
+		textAC = new JTextArea();
+		textAC.setBounds(0, 11, 1179, 414);
+		climatizacao.add(textAC);
 		//Mostrar menu principal
 		//CardLayout c = (CardLayout) frame.getContentPane().getLayout();
 		//c.show(frame.getContentPane(), "Principal");
@@ -319,15 +312,20 @@ public class GUI {
 	}
 	
 
+	protected void butaoTemperaturaAmbiente() {
+			GuiEvent ge = new GuiEvent(this,BUTAOTEMPAMB);
+			int valor = Integer.parseInt(JOptionPane.showInputDialog(null,"Insira o valor da temperatura ambiente"));
+				ge.addParameter(valor);
+			agGUI.postGuiEvent(ge);
+		
+	}
+
 	protected void updateTemperaturas() {
 		GuiEvent ge = new GuiEvent(this,TEMPERATURAS);
 		agGUI.postGuiEvent(ge);
 		
 	}
 
-	public void ola(){
-		System.out.println("OLA");
-	}
 	// Sair do programa
 	protected void butaoSair() {
 		GuiEvent ge = new GuiEvent(this,BUTAOSAIR);
@@ -562,7 +560,13 @@ public class GUI {
 	}
 
 	public void estadoAC(List<EstadoAC> estadoAtual) {
-		// TODO Auto-generated method stub
+		
+		if(!estadoAtual.isEmpty()){
+			textAC.setText("ID - Movimento - Estado do Ar Condicionado\n");
+			for(EstadoAC e : estadoAtual){
+				textAC.setText(textAC.getText()+e.nome+" - "+e.movimento+" - "+e.estado+"\n");
+			}
+		}
 		
 	}
 }

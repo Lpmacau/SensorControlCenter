@@ -335,7 +335,7 @@ public class AgenteControlador extends Agent {
 									inform.addUserDefinedParameter(l.getKey(), ""+l.getValue());
 									if(lastValuesMovimento.containsKey(l.getKey()+"Movimento")){
 										int movimentoAtual = lastValuesMovimento.get(l.getKey()+"Movimento");
-										inform.addUserDefinedParameter(l.getKey()+"Movimento", ""+l.getValue());
+										inform.addUserDefinedParameter(l.getKey()+"Movimento", ""+movimentoAtual);
 
 										
 										if(movimentoAtual==1){
@@ -492,7 +492,11 @@ public class AgenteControlador extends Agent {
 				}
 
 				else if (msg.getPerformative() == ACLMessage.INFORM) {
-					System.out.println(text);
+					// Desligar sensores
+					if (text.equals("updateTemperaturaAmbiente")) {
+						int temperatura = Integer.parseInt(msg.getUserDefinedParameter("updateTemperaturaAmbiente"));
+						temperaturaAmbiente = temperatura;
+					}
 				}
 			}
 			block();
