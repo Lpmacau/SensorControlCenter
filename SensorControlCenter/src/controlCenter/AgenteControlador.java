@@ -361,6 +361,10 @@ public class AgenteControlador extends Agent {
 																inform.setContent("quente");
 																frioQuente = "quente";
 															}
+															if(l.getValue()==temperaturaAmbiente){
+																inform.setContent("offline");
+																frioQuente = "off";
+															}
 															
 															send(inform);
 													}
@@ -665,8 +669,22 @@ public class AgenteControlador extends Agent {
 			request.setContent(pedido);
 			send(request);
 		}
-		
+
 		for (String s : this.agentes.get("sensorMovimento")) {
+			AID receiver = new AID();
+			receiver.setLocalName(s);
+
+			ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+			long time = System.currentTimeMillis();
+			String pedido = "shutdown";
+
+			request.setConversationId("" + time);
+			request.addReceiver(receiver);
+			request.setContent(pedido);
+			send(request);
+		}
+		
+		for (String s : this.agentes.get("AC")) {
 			AID receiver = new AID();
 			receiver.setLocalName(s);
 
