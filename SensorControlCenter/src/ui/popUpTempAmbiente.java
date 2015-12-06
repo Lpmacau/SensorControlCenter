@@ -9,8 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JLabel;
 
-public class popUpDivisoes extends JDialog {
+public class popUpTempAmbiente extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
@@ -20,7 +21,7 @@ public class popUpDivisoes extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			popUpDivisoes dialog = new popUpDivisoes();
+			popUpTempAmbiente dialog = new popUpTempAmbiente();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -31,8 +32,8 @@ public class popUpDivisoes extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public popUpDivisoes() {
-		setBounds(100, 100, 243, 145);
+	public popUpTempAmbiente() {
+		setBounds(100, 100, 317, 146);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -40,13 +41,12 @@ public class popUpDivisoes extends JDialog {
 		
 		textField = new JTextField();
 		textField.setColumns(10);
-		textField.setBounds(119, 34, 97, 20);
+		textField.setBounds(194, 35, 97, 20);
 		contentPanel.add(textField);
 		
-		JTextPane textPane = new JTextPane();
-		textPane.setText("Nome da divisão:");
-		textPane.setBounds(10, 34, 97, 20);
-		contentPanel.add(textPane);
+		JLabel lblTemperaturaAmbiente = new JLabel("Temperatura ambiente:");
+		lblTemperaturaAmbiente.setBounds(43, 32, 141, 26);
+		contentPanel.add(lblTemperaturaAmbiente);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

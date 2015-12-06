@@ -60,6 +60,8 @@ import javax.swing.JComboBox;
 import javax.swing.Timer;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import java.awt.Font;
+import java.awt.TextArea;
 
 public class GUI {
 	
@@ -137,7 +139,7 @@ public class GUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 937, 512);
+		frame.setBounds(100, 100, 1200, 512);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JPanel panelEntrada = new JPanel();
@@ -146,7 +148,7 @@ public class GUI {
 		
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
-		textField_1.setBounds(177, 151, 86, 20);
+		textField_1.setBounds(612, 296, 45, 27);
 		panelEntrada.add(textField_1);
 		
 		JButton button = new JButton("OK");
@@ -155,7 +157,7 @@ public class GUI {
 				butaoOK();
 			}
 		});
-		button.setBounds(135, 201, 75, 37);
+		button.setBounds(482, 352, 75, 37);
 		panelEntrada.add(button);
 		
 		JButton button_1 = new JButton("Exit");
@@ -164,15 +166,17 @@ public class GUI {
 				butaoSair();
 			}
 		});
-		button_1.setBounds(235, 201, 75, 37);
+		button_1.setBounds(582, 352, 75, 37);
 		panelEntrada.add(button_1);
 		
-		JLabel lblSensorcenas = new JLabel("SensorCenas");
-		lblSensorcenas.setBounds(185, 48, 63, 14);
+		JLabel lblSensorcenas = new JLabel("Home Temperature Monitor and Air Conditioning Manager");
+		lblSensorcenas.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblSensorcenas.setBounds(305, 95, 587, 44);
 		panelEntrada.add(lblSensorcenas);
 		
 		JLabel lblNmeroDeDivises = new JLabel("Número de Divisões:");
-		lblNmeroDeDivises.setBounds(168, 126, 107, 14);
+		lblNmeroDeDivises.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNmeroDeDivises.setBounds(482, 298, 117, 20);
 		panelEntrada.add(lblNmeroDeDivises);
 		
 		JPanel panelPrincipal = new JPanel();
@@ -183,17 +187,20 @@ public class GUI {
 		
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 921, 21);
+		menuBar.setBounds(0, 0, 1184, 21);
 		panelPrincipal.add(menuBar);
 		
-		JMenu mnSensorcenas = new JMenu("SensorCenas");
+		JMenu mnSensorcenas = new JMenu("Home Temperature Monitor and Air Conditioning Manager");
 		menuBar.add(mnSensorcenas);
+		
+		JMenuItem mntmDefinirTemperaturaAmbiente = new JMenuItem("Temperatura Ambiente");
+		mnSensorcenas.add(mntmDefinirTemperaturaAmbiente);
 		
 		JMenuItem mntmSair = new JMenuItem("Sair");
 		mnSensorcenas.add(mntmSair);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 21, 921, 453);
+		tabbedPane.setBounds(0, 21, 1184, 453);
 		panelPrincipal.add(tabbedPane);
 		
 		JSplitPane splitPaneHome = new JSplitPane();
@@ -203,6 +210,7 @@ public class GUI {
 		splitPaneHome.setLeftComponent(panelEsquerda);
 		
 		tableHome = new JTable();
+		tableHome.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableHome.setModel(new DefaultTableModel(
 			new Object[][] {
 				{"M\u00E9dia da Casa", null},
@@ -211,15 +219,14 @@ public class GUI {
 				{"Leituras sem resposta", null},
 				{"Leituras erradas", null},
 				{"Leituras inconsistentes", null},
-				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
 		tableHome.getColumnModel().getColumn(0).setPreferredWidth(113);
-		panelEsquerda.setLayout(new MigLayout("", "[188px,grow][6px]", "[93.00px][][grow]"));
-		panelEsquerda.add(tableHome, "cell 0 0,aligny center");
+		panelEsquerda.setLayout(new MigLayout("", "[288px,grow][6px]", "[93.00px][][grow]"));
+		panelEsquerda.add(tableHome, "cell 0 0 2 1,growx,aligny top");
 		
 		JLabel lblAvisos = new JLabel("Avisos:");
 		panelEsquerda.add(lblAvisos, "cell 0 1");
@@ -246,23 +253,16 @@ public class GUI {
 			}
 		});
 		
-		panel_3.setBounds(10, 10, 687, 363);
+		panel_3.setBounds(10, 10, 840, 403);
 		panel.add(panel_3);
 		panel_3.setLayout(new BorderLayout(0, 0));
-		
-		JLabel label = new JLabel("Escolha a divis\u00E3o:");
-		label.setBounds(458, 395, 115, 14);
-		panel.add(label);
-		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(582, 392, 105, 20);
-		panel.add(comboBox_1);
 		
 		JSplitPane splitPaneHistorico = new JSplitPane();
 		tabbedPane.addTab("Hist\u00F3rico", null, splitPaneHistorico, null);
 		
 		JPanel panel_1 = new JPanel();
 		splitPaneHistorico.setLeftComponent(panel_1);
+		panel_1.setLayout(new MigLayout("", "[288px,grow][6px]", "[93.00px][][grow]"));
 		
 		tableHistorico = new JTable();
 		tableHistorico.setModel(new DefaultTableModel(
@@ -273,15 +273,14 @@ public class GUI {
 				{"Leituras sem resposta", ""},
 				{"Leituras erradas", null},
 				{"Leituras inconcistentes", null},
-				{null, null},
 			},
 			new String[] {
 				"New column", "New column"
 			}
 		));
 		tableHistorico.getColumnModel().getColumn(0).setPreferredWidth(147);
-		panel_1.setLayout(new MigLayout("", "[222px]", "[222.00px]"));
-		panel_1.add(tableHistorico, "cell 0 0,alignx left,aligny top");
+		panel_1.setLayout(new MigLayout("", "[288px,grow][6px]", "[93.00px][][grow]"));
+		panel_1.add(tableHistorico, "cell 0 0,growx,aligny top");
 		
 		JPanel panel_2 = new JPanel();
 		splitPaneHistorico.setRightComponent(panel_2);
@@ -290,17 +289,21 @@ public class GUI {
 		panel_4 = new Panel();
 		chart1 = ChartFactory.createLineChart("Temperaturas Casa", "Graus Celsius", "Segundos", null, PlotOrientation.VERTICAL, false, false, false);
 		dataset1 = new DefaultCategoryDataset();
-		panel_4.setBounds(10, 10, 663, 361);
+		panel_4.setBounds(10, 10, 840, 403);
 		panel_2.add(panel_4);
 		panel_4.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lblEscolhaADiviso = new JLabel("Escolha a divis\u00E3o:");
-		lblEscolhaADiviso.setBounds(440, 395, 112, 14);
-		panel_2.add(lblEscolhaADiviso);
+		JPanel climatizacao = new JPanel();
+		tabbedPane.addTab("Climatização", null, climatizacao, null);
+		climatizacao.setLayout(null);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(551, 392, 112, 20);
-		panel_2.add(comboBox);
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(0, 420, 916, -418);
+		climatizacao.add(scrollPane_1);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(0, 0, 916, 425);
+		climatizacao.add(textArea);
 		
 		//Mostrar menu principal
 		//CardLayout c = (CardLayout) frame.getContentPane().getLayout();
@@ -562,22 +565,4 @@ public class GUI {
 		// TODO Auto-generated method stub
 		
 	}
-
-	/*private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-	}*/
 }
