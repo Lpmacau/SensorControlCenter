@@ -117,12 +117,12 @@ public class AgenteSensor extends Agent {
 
 					if (msg.getContent().equals("value")) {
 						if (isSensorState()) {
-							int randomNum = new Random().nextInt(51) - 26;
+							int randomNum = new Random().nextInt(100);
 
 							// System.out.println("Agente["+getLocalName()+"]
 							// recebi pedido de temperatura");
 
-							if (randomNum == -26) {
+							if (randomNum < 5) {
 								try {
 									Thread.sleep(3000);
 								} catch (InterruptedException e) {
@@ -131,19 +131,49 @@ public class AgenteSensor extends Agent {
 								}
 							}
 
-							else if (randomNum < -20 && randomNum >= -25) {
+							// Valor invalido
+							else if (randomNum < 10 && randomNum >= 5) {
 								reply.setContent("XXXXX");
 								reply.setPerformative(ACLMessage.INFORM);
 								myAgent.send(reply);
-							} else if (randomNum >= -20 && randomNum <= -6) {
-								reply.setContent(-randomNum + "");
+							} 
+							
+							// 5-30
+							else if (randomNum >= 10 && randomNum < 70) {
+								randomNum = 5 + (int) (Math.random() * ((30-5)+1));
+								reply.setContent(randomNum + "");
 								reply.setPerformative(ACLMessage.INFORM);
 								myAgent.send(reply);
-							} else if (randomNum >= -5 && randomNum <= 40) {
-								reply.setContent(-randomNum + "");
+							}
+							
+							// -5-5
+							else if (randomNum >= 70 && randomNum < 80) {
+								randomNum = -5 + (int) (Math.random() * ((10+5)+1));
+								reply.setContent(randomNum + "");
 								reply.setPerformative(ACLMessage.INFORM);
 								myAgent.send(reply);
-							} else if (randomNum > 40 && randomNum < 50) {
+							} 
+							
+							// 30-40
+							else if (randomNum >= 80 && randomNum < 90) {
+								randomNum = 30 + (int) (Math.random() * ((40-30)+1));
+								reply.setContent(randomNum + "");
+								reply.setPerformative(ACLMessage.INFORM);
+								myAgent.send(reply);
+							}
+							
+							// -20--5
+							else if (randomNum >= 90 && randomNum < 95) {
+								randomNum = 5 + (int) (Math.random() * ((20-5)+1));
+								randomNum *= -1;
+								reply.setContent(randomNum + "");
+								reply.setPerformative(ACLMessage.INFORM);
+								myAgent.send(reply);
+							} 
+							
+							// 40-50
+							else if (randomNum >= 95 && randomNum < 100) {
+								randomNum = 40 + (int) (Math.random() * ((50-40)+1));
 								reply.setContent(randomNum + "");
 								reply.setPerformative(ACLMessage.INFORM);
 								myAgent.send(reply);

@@ -385,6 +385,7 @@ public class GUI {
 		String sens;
 		int temp;
 		
+		int limpou = 0;
 		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
 			sens = l.getKey();
 			if(!l.getValue().isEmpty()){
@@ -400,13 +401,15 @@ public class GUI {
 				}
 				else{
 					
-					for ( int i=1;i<=l.getValue().size();i++){
-						
+					for ( int i=l.getValue().size()-20;i<=l.getValue().size();i++){
+						if(limpou==0){ 
+							dataset = new DefaultCategoryDataset();
+							limpou = 1;
+						}
 						//for(int valor : l.getValue()){
 						temp = l.getValue().get(i-1);
 						System.out.println("historico value-> "+temp+" --> "+i);
 						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
-						dataset1.removeColumn(i);
 					}
 					/*if(iteracoes % 60 == 0){
 						dataset1 = new DefaultCategoryDataset();
@@ -442,7 +445,7 @@ public class GUI {
 	public void ultimosErros(Map<String, String> errosSensores) {
 		
 		for(Map.Entry<String, String> e : errosSensores.entrySet()){
-			textErros.setText(textErros.getText()+e.getKey()+" -> "+e.getValue()+"\n");
+			textErros.setText(iteracoes+"s: "+textErros.getText()+e.getKey()+" -> "+e.getValue()+"\n");
 		}
 	}
 	
@@ -496,6 +499,63 @@ public class GUI {
 				"New column", "New column"
 			}
 		));
+		
+		
+		
+		// Dados de cada segundo
+		String divisaoMaisQuenteAtual, divisaoMaisFriaAtual;
+		int totalTimeoutAtual,totalErradaAtual,totalInconAtual,numDivisoesAtual,mediaCasaAtual,maisQuenteAtual, maisFriaAtual,totalTempAtual;
+		
+		divisaoMaisQuenteAtual = divisaoMaisFriaAtual = "";
+		totalTimeoutAtual = totalErradaAtual = totalInconAtual = totalTempAtual = mediaCasaAtual = 0;
+		numDivisoesAtual = graficos.keySet().size();
+		maisQuenteAtual = -1000;
+		maisFriaAtual = 1000;
+		
+		for(String erro : errosSensores.values()){
+			if(erro=="timeout") totalTimeoutAtual++;
+			if(erro=="XXXXX") totalErradaAtual++;
+			else totalInconAtual++;
+		}
+		
+		it = 0;
+		for(Map.Entry<String,List<Integer>> l : graficos.entrySet()){
+			String sens = l.getKey();
+			if(!l.getValue().isEmpty() && l.getValue().size()>0){
+				int valor = l.getValue().get(l.getValue().size()-1);
+				if(valor<maisFriaAtual){
+					maisFriaAtual = valor;
+					divisaoMaisFriaAtual = sens;
+				}
+				if(valor>maisQuenteAtual){
+					maisQuenteAtual = valor;
+					divisaoMaisQuenteAtual = sens;
+				}
+				if(it==0){
+					it = l.getValue().size();
+				}
+				totalTempAtual+=valor;
+			}
+		}
+		
+		if(it!=0 || totalTempAtual != 0){
+			mediaCasaAtual = totalTempAtual/numDivisoesAtual;
+		}
+		
+		tableHome.setModel(new DefaultTableModel(
+				new Object[][] {
+					{"M\u00E9dia da Casa", mediaCasaAtual},
+					{"Divis\u00E3o mais quente", divisaoMaisQuenteAtual + " -> "+maisQuenteAtual},
+					{"Divis\u00E3o mais fria", divisaoMaisFriaAtual+ " -> "+maisFriaAtual},
+					{"Leituras sem resposta", totalTimeoutAtual},
+					{"Leituras erradas", totalErradaAtual},
+					{"Leituras inconcistentes", totalInconAtual},
+				},
+				new String[] {
+					"New column", "New column"
+				}
+			));
+			
 		
 	}
 
