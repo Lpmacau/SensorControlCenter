@@ -38,6 +38,21 @@ public class AgenteGUI extends GuiAgent {
 	private List<String> sensores;
 	private Map<String,List<Integer>> graficos;
 	private Map<String,String> errosSensores;
+	private List<EstadoAC> estadoAtual;
+	
+	
+	public class EstadoAC{
+		public String nome;
+		public String movimento;
+		public String estado;
+		
+		public EstadoAC(String nome, String movimento, String estado){
+			nome = nome;
+			movimento = movimento;
+			estado = estado;
+		}
+	}
+	
 	
 	// GUI
 	transient protected GUI ui;
@@ -64,6 +79,7 @@ public class AgenteGUI extends GuiAgent {
 		this.sensores = new ArrayList<String>();
 		this.graficos = new HashMap<String,List<Integer>>();
 		this.errosSensores = new HashMap<String,String>();
+		this.estadoAtual = new ArrayList<EstadoAC>();
 		
 		
 		// Criacao do GUI
@@ -99,14 +115,8 @@ public class AgenteGUI extends GuiAgent {
 			if (msg != null) {
 				String text = msg.getContent();
 
-				if (msg.getPerformative() == ACLMessage.CONFIRM) {
-					if (text.equals("resposta")) {
-						String resposta = msg.getUserDefinedParameter("resposta");
-						//System.out.println("Agente[" + myAgent.getLocalName() + "] " + resposta);
-					}
-				}
 				
-				else if(msg.getPerformative() == ACLMessage.INFORM){
+				if(msg.getPerformative() == ACLMessage.INFORM){
 					if (text.equals("updateValores")){
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
@@ -114,12 +124,22 @@ public class AgenteGUI extends GuiAgent {
 							if(nomes.get(a)!=null){
 								if(graficos.get(a)!=null){
 									int valor = Integer.parseInt((String)nomes.get(a));
+									int movimento = 0;
+									String ac = "off";
 									graficos.get(a).add(valor);
 
 									if(nomes.get(a+"Movimento")!=null) {
-										int movimento = Integer.parseInt((String)nomes.get(a+"Movimento"));
+										movimento = Integer.parseInt((String)nomes.get(a+"Movimento"));
 										System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor+" Movimento: "+movimento);
 									}
+									
+									if(nomes.get(a+"AC")!=null) {
+										 ac = (String) nomes.get(a+"AC");
+										System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor+" AC: "+ac);
+									}
+									
+									EstadoAC estado = new EstadoAC(a,""+movimento,""+valor);
+									estadoAtual.add(estado);
 								}
 							}
 						}
@@ -202,6 +222,7 @@ public class AgenteGUI extends GuiAgent {
 			g.chartTempActLinhas(graficos);
 			g.ultimosErros(errosSensores);
 			g.showStats(graficos,errosSensores);
+			g.estadoAC(estadoAtual);
 		}
 		
 		

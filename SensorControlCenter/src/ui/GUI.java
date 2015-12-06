@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 import controlCenter.AgenteGUI;
+import controlCenter.AgenteGUI.EstadoAC;
 import jade.gui.GuiEvent;
 
 import javax.swing.JButton;
@@ -554,6 +555,11 @@ public class GUI {
 				}
 			));
 			
+		
+	}
+
+	public void estadoAC(List<EstadoAC> estadoAtual) {
+		// TODO Auto-generated method stub
 		
 	}
 

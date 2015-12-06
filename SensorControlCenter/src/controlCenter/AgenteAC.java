@@ -12,8 +12,13 @@ import jade.lang.acl.ACLMessage;
 
 public class AgenteAC extends Agent {
 	private static final long serialVersionUID = 1L;
-	private boolean onOff = false;
 	private boolean finished = false;
+	private boolean onOff = false;
+	private int state;
+	
+
+	private static final int QUENTE = 1;
+	private static final int FRIO = 0;
 
 	@Override
 	protected void takeDown() {
@@ -88,21 +93,21 @@ public class AgenteAC extends Agent {
 					}
 
 					if (msg.getContent().equals("offline")) {
-						if(onOff==true) System.out.println("Agente[" + myAgent.getLocalName() + "] esta agora offline");
+						if(onOff==true) onOff=false;
 						reply.setPerformative(ACLMessage.CONFIRM);
 						myAgent.send(reply);
 					}
 					
 					if (msg.getContent().equals("quente")) {
 						if(onOff==false)onOff=true;
-						System.out.println("Agente[" + myAgent.getLocalName() + "] modo de aquecimento ativo");
+						state = QUENTE;
 						reply.setPerformative(ACLMessage.CONFIRM);
 						myAgent.send(reply);
 					}
 					
 					if (msg.getContent().equals("frio")) {
 						if(onOff==false)onOff=true;
-						System.out.println("Agente[" + myAgent.getLocalName() + "] modo de arrefecimento ativo");
+						state = FRIO;
 						reply.setPerformative(ACLMessage.CONFIRM);
 						myAgent.send(reply);
 					}

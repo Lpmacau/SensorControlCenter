@@ -40,6 +40,7 @@ public class AgenteControlador extends Agent {
 	private Map<String, List<SensorValue>> historyMovimento;
 	private Map<String, List<SensorError>> sensorErrors;
 	private int temperaturaAmbiente;
+	private String frioQuente="off";
 
 	private class SensorValue {
 		private Date tempo;
@@ -332,15 +333,67 @@ public class AgenteControlador extends Agent {
 								
 								for(Map.Entry<String,Integer> l : lastValuesTemperatura.entrySet()){
 									inform.addUserDefinedParameter(l.getKey(), ""+l.getValue());
-									if(lastValuesMovimento.containsKey(l.getKey())){
-										int movimento = lastValuesMovimento.get(l.getKey());
+									if(lastValuesMovimento.containsKey(l.getKey()+"Movimento")){
+										int movimentoAtual = lastValuesMovimento.get(l.getKey()+"Movimento");
 										inform.addUserDefinedParameter(l.getKey()+"Movimento", ""+l.getValue());
+
+										
+										if(movimentoAtual==1){
+											myAgent.addBehaviour(new OneShotBehaviour() {
+												@Override
+												public void action() {
+													if(agentes.containsKey("AC")){
+														String arcond = l.getKey()+"AC";
+															AID receiver = new AID();
+															receiver.setLocalName(arcond);
+
+															ACLMessage inform = new ACLMessage(ACLMessage.REQUEST);
+															long time = System.currentTimeMillis();
+
+															inform.setConversationId("" + time);
+															inform.addReceiver(receiver);
+
+															if(l.getValue()>temperaturaAmbiente) {
+																inform.setContent("frio");
+																frioQuente = "frio";
+															}
+															if(l.getValue()<temperaturaAmbiente) {
+																inform.setContent("quente");
+																frioQuente = "quente";
+															}
+															
+															send(inform);
+													}
+												}
+											});
+										}
+										
+										else{
+											myAgent.addBehaviour(new OneShotBehaviour() {
+												@Override
+												public void action() {
+													if(agentes.containsKey("AC")){
+															String arcond = l.getKey()+"AC";
+															AID receiver = new AID();
+															receiver.setLocalName(arcond);
+
+															ACLMessage inform = new ACLMessage(ACLMessage.REQUEST);
+															long time = System.currentTimeMillis();
+
+															inform.setConversationId("" + time);
+															inform.addReceiver(receiver);
+															inform.setContent("offline");
+															
+															send(inform);
+													}
+												}
+											});
+											frioQuente="off";
+										}
+
+										inform.addUserDefinedParameter(l.getKey()+"AC",frioQuente);
 									}
 								}
-								
-								for(Map.Entry<String,Integer> l : lastValuesMovimento.entrySet()){
-								}
-								
 								
 								
 								send(inform);
@@ -582,7 +635,7 @@ public class AgenteControlador extends Agent {
 
 		AgentController ac = cc.createNewAgent(nome, AgenteSensorTemperatura.class.getName(), null);
 		AgentController ac2 = cc.createNewAgent(nome+"Movimento", AgenteSensorMovimento.class.getName(), null);
-		AgentController ac3 = cc.createNewAgent(nome+"AC", AgenteSensorMovimento.class.getName(), null);
+		AgentController ac3 = cc.createNewAgent(nome+"AC", AgenteAC.class.getName(), null);
 		ac.start();
 		ac2.start();
 		ac3.start();
