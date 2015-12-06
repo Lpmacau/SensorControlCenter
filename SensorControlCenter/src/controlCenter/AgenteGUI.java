@@ -102,13 +102,12 @@ public class AgenteGUI extends GuiAgent {
 				if (msg.getPerformative() == ACLMessage.CONFIRM) {
 					if (text.equals("resposta")) {
 						String resposta = msg.getUserDefinedParameter("resposta");
-						System.out.println("Agente[" + myAgent.getLocalName() + "] " + resposta);
+						//System.out.println("Agente[" + myAgent.getLocalName() + "] " + resposta);
 					}
 				}
 				
 				else if(msg.getPerformative() == ACLMessage.INFORM){
 					if (text.equals("updateValores")){
-						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos valores");
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
 						for(String a : sensores){
@@ -116,7 +115,11 @@ public class AgenteGUI extends GuiAgent {
 								if(graficos.get(a)!=null){
 									int valor = Integer.parseInt((String)nomes.get(a));
 									graficos.get(a).add(valor);
-									System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor);
+
+									if(nomes.get(a+"Movimento")!=null) {
+										int movimento = Integer.parseInt((String)nomes.get(a+"Movimento"));
+										System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+valor+" Movimento: "+movimento);
+									}
 								}
 							}
 						}
@@ -124,13 +127,12 @@ public class AgenteGUI extends GuiAgent {
 					
 					else if (text.equals("updateErros")){
 						errosSensores.clear();
-						System.out.println("Agente[" + myAgent.getLocalName() + "]  recebi update dos erros");
 						Properties nomes = msg.getAllUserDefinedParameters();
 						
 						for(String a : sensores){
 							if(nomes.get(a)!=null){
 								errosSensores.put(a,(String) nomes.get(a));
-								System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+nomes.getProperty(a));
+								//System.out.println("Agente[" + myAgent.getLocalName() + "] "+a+" -> "+nomes.getProperty(a));
 							}
 						}
 					}

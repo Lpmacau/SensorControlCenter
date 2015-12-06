@@ -395,7 +395,6 @@ public class GUI {
 						
 						//for(int valor : l.getValue()){
 						temp = l.getValue().get(i-1);
-						System.out.println("historico value-> "+temp+" --> "+i);
 						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
 					}
 				}
@@ -408,7 +407,6 @@ public class GUI {
 						}
 						//for(int valor : l.getValue()){
 						temp = l.getValue().get(i-1);
-						System.out.println("historico value-> "+temp+" --> "+i);
 						dataset1.addValue(temp, sens, String.valueOf(iteracoes));
 					}
 					/*if(iteracoes % 60 == 0){
@@ -445,7 +443,7 @@ public class GUI {
 	public void ultimosErros(Map<String, String> errosSensores) {
 		
 		for(Map.Entry<String, String> e : errosSensores.entrySet()){
-			textErros.setText(iteracoes+"s: "+textErros.getText()+e.getKey()+" -> "+e.getValue()+"\n");
+			textErros.setText(textErros.getText()+iteracoes+"s: "+e.getKey()+" -> "+e.getValue()+"\n");
 		}
 	}
 	

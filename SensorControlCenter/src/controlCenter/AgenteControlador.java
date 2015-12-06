@@ -32,10 +32,14 @@ public class AgenteControlador extends Agent {
 
 	private static final long serialVersionUID = 1L;
 	private Map<String, List<String>> agentes;
-	private Map<String, Integer> lastValues;
-	private Map<String, String> lastErrors;
-	private Map<String, List<SensorValue>> history;
+	private Map<String, Integer> lastValuesTemperatura;
+	private Map<String, Integer> lastValuesMovimento;
+	private Map<String, String> lastErrorsTemperatura;
+	private Map<String, String> lastErrorsMovimento;
+	private Map<String, List<SensorValue>> historyTemperatura;
+	private Map<String, List<SensorValue>> historyMovimento;
 	private Map<String, List<SensorError>> sensorErrors;
+	private int temperaturaAmbiente;
 
 	private class SensorValue {
 		private Date tempo;
@@ -110,10 +114,14 @@ public class AgenteControlador extends Agent {
 
 		// Inicializar estruturas
 		this.agentes = new HashMap<String, List<String>>();
-		this.history = new HashMap<String, List<SensorValue>>();
-		this.lastErrors = new HashMap<String, String>();
-		this.lastValues = new HashMap<String, Integer>();
+		this.historyTemperatura = new HashMap<String, List<SensorValue>>();
+		this.historyMovimento = new HashMap<String, List<SensorValue>>();
+		this.lastErrorsTemperatura = new HashMap<String, String>();
+		this.lastErrorsMovimento = new HashMap<String, String>();
+		this.lastValuesTemperatura = new HashMap<String, Integer>();
+		this.lastValuesMovimento = new HashMap<String, Integer>();
 		this.sensorErrors = new HashMap<String, List<SensorError>>();
+		this.temperaturaAmbiente = 22;
 
 		// Procurar todos os agentes na rede e adicionar comportamentos
 		this.getAllAgents();
@@ -133,17 +141,19 @@ public class AgenteControlador extends Agent {
 		@Override
 		protected void onTick() {
 			// Verificar se existe sensores detetados
-			if (agentes.get("sensor") != null) {
+			if (agentes.get("sensorTemperatura") != null) {
 				// Limpar valores anteriores
-				lastErrors.clear();
-				lastValues.clear();
+				lastErrorsTemperatura.clear();
+				lastErrorsMovimento.clear();
+				lastValuesTemperatura.clear();
+				lastValuesMovimento.clear();
 
 				// Obter listas de pedidos e recetores
 				List<ACLMessage> requests = new ArrayList<ACLMessage>();
 				List<AID> receivers = new ArrayList<AID>();
 
 				// Preparar pedido e preencher listas
-				for (String agent : agentes.get("sensor")) {
+				for (String agent : agentes.get("sensorTemperatura")) {
 					AID receiver = new AID();
 					receiver.setLocalName(agent);
 
@@ -158,11 +168,31 @@ public class AgenteControlador extends Agent {
 					receivers.add(receiver);
 				}
 
+				if(agentes.get("sensorMovimento")!= null){
+					for (String agent : agentes.get("sensorMovimento")) {
+						AID receiver = new AID();
+						receiver.setLocalName(agent);
+	
+						ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+						long time = System.currentTimeMillis();
+	
+						request.setConversationId("" + time);
+						request.addReceiver(receiver);
+						request.setContent("value");
+	
+						requests.add(request);
+						receivers.add(receiver);
+					}
+				}
+				
 				// Realizar o pedido aos sensores
 				for (int i = 0; i < requests.size(); i++) {
 					ACLMessage request = requests.get(i);
 					AID receiver = receivers.get(i);
 					String agente = receiver.getLocalName();
+					int movimento = 0;
+					if(agente.contains("Movimento")) movimento = 1;
+					
 					try {
 						// Fazer pedido e esperar resposta
 						ACLMessage answer = DFService.doFipaRequestClient(myAgent, request, 3000);
@@ -174,31 +204,58 @@ public class AgenteControlador extends Agent {
 							// Determinar o erro
 							if (answer == null)
 								System.out.println(
-										"Agente[" + getLocalName() + "] " + agente + " não enviou temperatura");
+										"Agente[" + getLocalName() + "] " + agente + " não enviou valor");
 							else
 								System.out.println(
-										"Agente[" + getLocalName() + "] " + agente + " enviou temperatura inválida");
+										"Agente[" + getLocalName() + "] " + agente + " enviou valor inválido");
 
-							// Caso já tenha uma lista de erros
-							if (sensorErrors.containsKey(agente)) {
-								if (answer == null)
-									sensorErrors.get(agente).add(new SensorError("timeout"));
-								else
-									sensorErrors.get(agente).add(new SensorError("XXXXX"));
+							
+							if(movimento==1){
+								// Caso já tenha uma lista de erros
+								if (sensorErrors.containsKey(agente)) {
+									if (answer == null)
+										sensorErrors.get(agente).add(new SensorError("timeout"));
+									else
+										sensorErrors.get(agente).add(new SensorError("XXXXX"));
+								}
+
+								// Criar lista de erros
+								else {
+									ArrayList<SensorError> lista = new ArrayList<SensorError>();
+									if (answer == null)
+										lista.add(new SensorError("timeout"));
+									else
+										lista.add(new SensorError("XXXXX"));
+									sensorErrors.put(agente, lista);
+								}
+
+								if(answer==null) lastErrorsMovimento.put(agente, "timeout");
+								else lastErrorsMovimento.put(agente, "XXXXX");
 							}
+							
+							else{
+								// Caso já tenha uma lista de erros
+								if (sensorErrors.containsKey(agente)) {
+									if (answer == null)
+										sensorErrors.get(agente).add(new SensorError("timeout"));
+									else
+										sensorErrors.get(agente).add(new SensorError("XXXXX"));
+								}
 
-							// Criar lista de erros
-							else {
-								ArrayList<SensorError> lista = new ArrayList<SensorError>();
-								if (answer == null)
-									lista.add(new SensorError("timeout"));
-								else
-									lista.add(new SensorError("XXXXX"));
-								sensorErrors.put(agente, lista);
+								// Criar lista de erros
+								else {
+									ArrayList<SensorError> lista = new ArrayList<SensorError>();
+									if (answer == null)
+										lista.add(new SensorError("timeout"));
+									else
+										lista.add(new SensorError("XXXXX"));
+									sensorErrors.put(agente, lista);
+								}
+
+								if(answer==null) lastErrorsTemperatura.put(agente, "timeout");
+								else lastErrorsTemperatura.put(agente, "XXXXX");
 							}
-
-							if(answer==null) lastErrors.put(agente, "timeout");
-							else lastErrors.put(agente, "XXXXX");
+							
 						}
 
 						// Resposta do sensor
@@ -208,33 +265,51 @@ public class AgenteControlador extends Agent {
 							int valor = Integer.parseInt(answer.getContent());
 							
 							// Validar valor para ver se nao é improvavel
-							int valido = validaValor(agente,valor);
-							
-							// Inferior
-							if(valido == -1){
-								lastErrors.put(agente, "Valor Improvável Inferior "+valor);
-							}
-							// Superior
-							if(valido == 1){
-								lastErrors.put(agente, "Valor Improvável Superior "+valor);
+							if(movimento==0){
+								int valido = validaValor(agente,valor);
+								
+								// Inferior
+								if(valido == -1){
+									lastErrorsTemperatura.put(agente, "Valor Improvável Inferior "+valor);
+								}
+								// Superior
+								if(valido == 1){
+									lastErrorsTemperatura.put(agente, "Valor Improvável Superior "+valor);
+								}
+								
+								if (historyTemperatura.containsKey(agente)) {
+									historyTemperatura.get(agente).add(new SensorValue(valor));
+								}
+
+								else {
+									ArrayList<SensorValue> lista = new ArrayList<SensorValue>();
+									lista.add(new SensorValue(valor));
+									historyTemperatura.put(agente, lista);
+								}
+								
+
+								lastValuesTemperatura.put(agente, valor);
 							}
 							
 							// Inserir no historico e nos ultimos valores
-							if (history.containsKey(agente)) {
-								history.get(agente).add(new SensorValue(valor));
-							}
+							if(movimento==1){
+								if (historyMovimento.containsKey(agente)) {
+									historyMovimento.get(agente).add(new SensorValue(valor));
+								}
 
-							else {
-								ArrayList<SensorValue> lista = new ArrayList<SensorValue>();
-								lista.add(new SensorValue(valor));
-								history.put(agente, lista);
-							}
+								else {
+									ArrayList<SensorValue> lista = new ArrayList<SensorValue>();
+									lista.add(new SensorValue(valor));
+									historyMovimento.put(agente, lista);
+								}
+								
 
-							lastValues.put(agente, valor);
+								lastValuesMovimento.put(agente, valor);
+							}
+							
 						}
 					} catch (FIPAException e) {
 						// TODO Auto-generated catch block
-						System.out.println("ESCAXOU");
 						e.printStackTrace();
 					}
 				}
@@ -255,13 +330,21 @@ public class AgenteControlador extends Agent {
 								inform.addReceiver(receiver);
 								inform.setContent("updateValores");
 								
-								for(Map.Entry<String,Integer> l : lastValues.entrySet()){
+								for(Map.Entry<String,Integer> l : lastValuesTemperatura.entrySet()){
 									inform.addUserDefinedParameter(l.getKey(), ""+l.getValue());
+									if(lastValuesMovimento.containsKey(l.getKey())){
+										int movimento = lastValuesMovimento.get(l.getKey());
+										inform.addUserDefinedParameter(l.getKey()+"Movimento", ""+l.getValue());
+									}
 								}
+								
+								for(Map.Entry<String,Integer> l : lastValuesMovimento.entrySet()){
+								}
+								
+								
 								
 								send(inform);
 							}
-							else System.out.println("NULISSIMO");
 						}
 					}
 				});
@@ -284,30 +367,23 @@ public class AgenteControlador extends Agent {
 								inform.setContent("updateErros");
 								
 
-								for(Map.Entry<String,String> l : lastErrors.entrySet()){
+								for(Map.Entry<String,String> l : lastErrorsTemperatura.entrySet()){
 									inform.addUserDefinedParameter(l.getKey(), l.getValue());
+								}
+								
+								for(Map.Entry<String,String> l : lastErrorsMovimento.entrySet()){
+									inform.addUserDefinedParameter(l.getKey()+"Movimento", ""+l.getValue());
 								}
 								
 								send(inform);
 							}
-							else System.out.println("NULISSIMO");
 						}
 					}
 				});
 				
 
 				
-				System.out.println("----------------------------------------");
-				System.out.println("ERROS ATUAIS:");
-				for (Map.Entry<String, List<SensorError>> entrada : sensorErrors.entrySet()) {
-					String nome = entrada.getKey();
-					for (SensorError s : entrada.getValue()) {
-						Date data = s.getTempo();
-						System.out.println(data.getHours()+":"+data.getMinutes()+":"+data.getSeconds()+" -> " + s.getTipo());
-					}
-				}
-
-				System.out.println("----------------------------------------");
+				System.out.println("-----------------------------------------------");
 
 			} else
 				System.out.println("Agente[" + getLocalName() + "] não há sensores disponíveis");
@@ -341,7 +417,7 @@ public class AgenteControlador extends Agent {
 							createSensorAgent(nome);
 							reply.setPerformative(ACLMessage.CONFIRM);
 							reply.addUserDefinedParameter("resposta",
-									"Criação de Agente de senor:" + nome + " bem sucedida");
+									"Criação de Agente de sensor:" + nome + ", "+nome+"Movimento e "+nome+"AC bem sucedida");
 							reply.setContent("resposta");
 						} catch (StaleProxyException e) {
 							reply.setPerformative(ACLMessage.FAILURE);
@@ -406,26 +482,70 @@ public class AgenteControlador extends Agent {
 			}
 
 			// Procurar pelas sensores
-			sd.setType("sensor");
+			sd.setType("sensorTemperatura");
 			result = DFService.search(this, dfd);
 
 			// Insercao na estrutura
 			if (result.length > 0) {
 				System.out.println(
-						"Agente[" + this.getLocalName() + "] Encontrei " + result.length + " agentes do tipo sensor");
+						"Agente[" + this.getLocalName() + "] Encontrei " + result.length + " agentes do tipo sensorTemperatura");
 				for (int i = 0; i < result.length; i++) {
 					System.out.println("Agente[" + this.getLocalName() + "] " + result[i].getName().getLocalName());
-					if (agentes.containsKey("sensor")) {
-						agentes.get("sensor").add(result[i].getName().getLocalName());
+					if (agentes.containsKey("sensorTemperatura")) {
+						agentes.get("sensorTemperatura").add(result[i].getName().getLocalName());
 					} else {
 						List<String> listaAgentes = new ArrayList<String>();
 						listaAgentes.add(result[i].getName().getLocalName());
-						agentes.put("sensor", listaAgentes);
+						agentes.put("sensorTemperatura", listaAgentes);
 					}
 				}
 
 			} else {
-				System.out.println("Agente[" + this.getLocalName() + "] Não encontrei qualquer agente do tipo sensor");
+				System.out.println("Agente[" + this.getLocalName() + "] Não encontrei qualquer agente do tipo sensorTemperatura");
+			}
+			
+			// Procurar pelas sensores
+			sd.setType("sensorMovimento");
+			result = DFService.search(this, dfd);
+
+			// Insercao na estrutura
+			if (result.length > 0) {
+				System.out.println("Agente[" + this.getLocalName() + "] Encontrei " + result.length + " agentes do tipo sensorMovimento");
+				for (int i = 0; i < result.length; i++) {
+					System.out.println("Agente[" + this.getLocalName() + "] " + result[i].getName().getLocalName());
+					if (agentes.containsKey("sensorMovimento")) {
+						agentes.get("sensorMovimento").add(result[i].getName().getLocalName());
+					} else {
+						List<String> listaAgentes = new ArrayList<String>();
+						listaAgentes.add(result[i].getName().getLocalName());
+						agentes.put("sensorMovimento", listaAgentes);
+					}
+				}
+
+			} else {
+				System.out.println("Agente[" + this.getLocalName() + "] Não encontrei qualquer agente do tipo sensorMovimento");
+			}
+			
+			// Procurar pelas sensores
+			sd.setType("AC");
+			result = DFService.search(this, dfd);
+
+			// Insercao na estrutura
+			if (result.length > 0) {
+				System.out.println("Agente[" + this.getLocalName() + "] Encontrei " + result.length + " agentes do tipo AC");
+				for (int i = 0; i < result.length; i++) {
+					System.out.println("Agente[" + this.getLocalName() + "] " + result[i].getName().getLocalName());
+					if (agentes.containsKey("AC")) {
+						agentes.get("AC").add(result[i].getName().getLocalName());
+					} else {
+						List<String> listaAgentes = new ArrayList<String>();
+						listaAgentes.add(result[i].getName().getLocalName());
+						agentes.put("AC", listaAgentes);
+					}
+				}
+
+			} else {
+				System.out.println("Agente[" + this.getLocalName() + "] Não encontrei qualquer agente do tipo AC");
 			}
 		} catch (FIPAException e) {
 			// TODO Auto-generated catch block
@@ -436,12 +556,12 @@ public class AgenteControlador extends Agent {
 	}
 
 	public int validaValor(String agente, int valor) {
-		if(history.containsKey(agente)){
-			int tamanho = history.get(agente).size();
+		if(historyTemperatura.containsKey(agente)){
+			int tamanho = historyTemperatura.get(agente).size();
 			if(tamanho>3){
 				int valor1,valor2;
-				valor1 = history.get(agente).get(tamanho-1).valor;
-				valor2 = history.get(agente).get(tamanho-2).valor;
+				valor1 = historyTemperatura.get(agente).get(tamanho-1).valor;
+				valor2 = historyTemperatura.get(agente).get(tamanho-2).valor;
 				
 				// Valor improvável inferior
 				if((valor>-20 && valor<-6) && (valor1>-20 && valor1<-6) && (valor2>-20 && valor2<-6)){
@@ -460,8 +580,12 @@ public class AgenteControlador extends Agent {
 	public void createSensorAgent(String nome) throws StaleProxyException {
 		ContainerController cc = getContainerController();
 
-		AgentController ac = cc.createNewAgent(nome, AgenteSensor.class.getName(), null);
+		AgentController ac = cc.createNewAgent(nome, AgenteSensorTemperatura.class.getName(), null);
+		AgentController ac2 = cc.createNewAgent(nome+"Movimento", AgenteSensorMovimento.class.getName(), null);
+		AgentController ac3 = cc.createNewAgent(nome+"AC", AgenteSensorMovimento.class.getName(), null);
 		ac.start();
+		ac2.start();
+		ac3.start();
 
 		this.getAllAgents();
 	}
@@ -471,7 +595,7 @@ public class AgenteControlador extends Agent {
 		// Atualizar agentes
 		this.getAllAgents();
 
-		for (String s : this.agentes.get("sensor")) {
+		for (String s : this.agentes.get("sensorTemperatura")) {
 			AID receiver = new AID();
 			receiver.setLocalName(s);
 
@@ -484,15 +608,19 @@ public class AgenteControlador extends Agent {
 			request.setContent(pedido);
 			send(request);
 		}
-	}
+		
+		for (String s : this.agentes.get("sensorMovimento")) {
+			AID receiver = new AID();
+			receiver.setLocalName(s);
 
-	// Criacao de n agentes do tipo sensor
-	private void createSensorAgents(int n) throws StaleProxyException {
-		ContainerController cc = getContainerController();
-		for (int i = 0; i < n; i++) {
-			AgentController ac = cc.createNewAgent("agSensor" + i, AgenteSensor.class.getName(), null);
-			ac.start();
+			ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+			long time = System.currentTimeMillis();
+			String pedido = "shutdown";
+
+			request.setConversationId("" + time);
+			request.addReceiver(receiver);
+			request.setContent(pedido);
+			send(request);
 		}
-		this.getAllAgents();
 	}
 }
